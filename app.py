@@ -91,10 +91,22 @@ def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_ty
 
 
 # Personalized Meal Planning Function
-def create_meal_plan(preferences, dietary_restrictions, goal, duration='7 days'):
-    prompt = f"Create a {duration} meal plan based on the following preferences: {preferences}, dietary restrictions: {dietary_restrictions}, and health goal: {goal}."
-    meal_plan = generate_chat_response(prompt, max_tokens=200)
+def create_meal_plan(preferences, dietary_restrictions, goal, duration=1, activity_level=None, cuisine=None, meal_types=None):
+    # Create a detailed prompt with more specific information, considering location (Singapore) and user preferences
+    prompt = (
+        f"Create a {duration} day meal plan in Singapore with the following details:\n"
+        f"- Food preferences: {preferences}\n"
+        f"- Dietary restrictions: {', '.join(dietary_restrictions) if dietary_restrictions else 'None'}\n"
+        f"- Health goal: {goal}\n"
+        f"- Activity level: {activity_level if activity_level else 'Not specified'}\n"
+        f"- Preferred cuisines: {', '.join(cuisine) if cuisine else 'Any'}\n"
+        f"- Preferred meal types: {', '.join(meal_types) if meal_types else 'Any'}\n"
+        f"Include time, location, date, food items, and detailed nutritional information for each food item."
+    )
+    
+    meal_plan = generate_chat_response(prompt, max_tokens=400)
     return meal_plan
+
 
 # Flask API Endpoints
 @app.route('/api/meal_suggestion', methods=['POST'])
@@ -146,13 +158,18 @@ def meal_plan_api():
     try:
         data = request.get_json()
         preferences = data['plan_preferences']
-        dietary_restrictions = data['plan_dietary_restrictions']
+        dietary_restrictions = data.get('plan_dietary_restrictions', [])
         goal = data['plan_goal']
-        duration = data.get('duration', '7 days')
-        meal_plan = create_meal_plan(preferences, dietary_restrictions, goal, duration)
+        activity_level = data.get('activity_level_plan', '')
+        cuisine = data.get('plan_cuisine', [])
+        meal_types = data.get('meal_types_plan', [])
+
+        # Pass the new fields to the create_meal_plan function
+        meal_plan = create_meal_plan(preferences, dietary_restrictions, goal, activity_level, cuisine, meal_types)
         return jsonify({'meal_plan': meal_plan})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
     
 # Flask API endpoint for food image analysis
 @app.route('/api/image_analysis', methods=['POST'])
