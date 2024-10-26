@@ -35,9 +35,16 @@
       .tab-content.active {
         display: block;
       }
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+      }
     </style>
   </head>
   <body>
+
     <h1>Welcome to Nutri365</h1>
 
     <!-- Tab Navigation -->
@@ -476,6 +483,11 @@
       <div id="meal-plan-result"></div>
     </div>
 
+    <!-- Logo -->
+    <div class="logo-container">
+      <img src={{url_for('static', filename='healthy365logo.png')}} alt="Healthy365 Logo" style="max-width: 200px;" />
+    </div>
+
     <!-- JavaScript to handle form submissions and display results -->
     <script>
 
@@ -491,7 +503,7 @@
           document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
         });
       });
-      
+
       // Function to handle API requests and update the result
       async function handleFormSubmission(
         formId,
