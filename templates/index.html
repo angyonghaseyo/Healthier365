@@ -101,6 +101,37 @@
     <div id="health-info-result"></div>
     <br />
 
+     <!-- Nutritional Analysis Form -->
+     <form id="nutrition-analysis-form">
+      <h3>Analyze Meal's Nutrition</h3>
+      <label for="meal">Search for a local dish:</label>
+      <input type="text" id="meal" name="meal" required />
+      <button type="submit">Analyze Nutrition</button>
+    </form>
+    <div id="nutrition-analysis-result"></div>
+    <br />
+
+     <!-- Image Upload Form -->
+     <form id="image-upload-form" enctype="multipart/form-data">
+      <h3>Upload Food Image for Nutritional Analysis</h3>
+      <label for="food-image">Choose an image of food:</label>
+      <input
+        type="file"
+        id="food-image"
+        name="food-image"
+        accept="image/*"
+        required
+      />
+      <button type="submit">Upload and Analyze</button>
+    </form>
+    <img
+      id="image-preview"
+      style="max-width: 300px; display: none"
+      alt="Food Image Preview"
+    />
+    <div id="image-analysis-result"></div>
+    <br />
+
     <!-- Meal Suggestion Form -->
     <form id="meal-suggestion-form">
       <h3>Get a Meal Suggestion</h3>
@@ -206,16 +237,6 @@
 
     <!-- Meal Suggestion Result -->
     <div id="meal-suggestion-result"></div>
-    <br />
-
-    <!-- Nutritional Analysis Form -->
-    <form id="nutrition-analysis-form">
-      <h3>Analyze Meal's Nutrition</h3>
-      <label for="meal">Search for a local dish:</label>
-      <input type="text" id="meal" name="meal" required />
-      <button type="submit">Analyze Nutrition</button>
-    </form>
-    <div id="nutrition-analysis-result"></div>
     <br />
 
     <!-- Dietary Advice Form -->
@@ -462,27 +483,6 @@
 
     <!-- Meal Plan Result -->
     <div id="meal-plan-result"></div>
-    <br />
-
-    <!-- Image Upload Form -->
-    <form id="image-upload-form" enctype="multipart/form-data">
-      <h3>Upload Food Image for Nutritional Analysis</h3>
-      <label for="food-image">Choose an image of food:</label>
-      <input
-        type="file"
-        id="food-image"
-        name="food-image"
-        accept="image/*"
-        required
-      />
-      <button type="submit">Upload and Analyze</button>
-    </form>
-    <img
-      id="image-preview"
-      style="max-width: 300px; display: none"
-      alt="Food Image Preview"
-    />
-    <div id="image-analysis-result"></div>
     <br />
 
     <!-- JavaScript to handle form submissions and display results -->
