@@ -5,46 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nutri365</title>
     <style>
-      /* Basic styles for tabs */
+      /* General Style */
+      body {
+        font-family: Arial, sans-serif;
+   
+        color: #333;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        text-align: center;
+        color: #0077cc;
+        margin-top: 20px;
+        font-weight: normal;
+      }
+
+      /* Tabs */
       .tabs {
         display: flex;
-        cursor: pointer;
-        background-color: #f1f1f1;
-        margin-bottom: 10px;
+        justify-content: center;
+        background-color: #ffffff;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
       }
 
       .tab {
-        padding: 10px 20px;
-        border: 1px solid #ccc;
-        border-bottom: none;
-        background-color: #e2e2e2;
-        margin-right: 5px;
+        padding: 15px 25px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        color: #777;
+        font-weight: 600;
+        transition: color 0.3s;
       }
 
       .tab.active {
-        background-color: #ffffff;
-        border-top: 2px solid #4caf50;
+        color: #0077cc;
+        border-bottom: 3px solid #0077cc;
       }
 
+      /* Container for the content */
+      .content-container {
+        width: 90%;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* Tab Content */
       .tab-content {
         display: none;
-        border: 1px solid #ccc;
-        padding: 15px;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
       }
 
       .tab-content.active {
         display: block;
       }
 
+      /* Forms */
+      form {
+        display: grid;
+        grid-gap: 5px;
+      }
+
+      label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+
+      /* Buttons */
+      button {
+        padding: 10px 20px;
+        background-color: #0077cc;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #005fa3;
+      }
+
+      /* Image Upload */
+      #image-preview {
+        margin-top: 15px;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Tab Section Styling */
+      .form-section {
+        background-color: #f1f1f1;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
       .logo-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 50px;
+        text-align: center;
+        margin: 30px 0;
       }
     </style>
   </head>
   <body>
-
     <h1>Welcome to Nutri365</h1>
 
     <!-- Tab Navigation -->
@@ -129,7 +212,9 @@
         />
         <label for="high_cholesterol">High Cholesterol</label>
         <br />
-        <label for="include_health">Include this information in planning:</label>
+        <label for="include_health"
+          >Include this information in planning:</label
+        >
         <input type="checkbox" id="include_health" name="include_health" />
         <br />
         <button type="submit">Save Health Information</button>
@@ -153,6 +238,11 @@
       <form id="image-upload-form" enctype="multipart/form-data">
         <h3>Upload Food Image for Nutritional Analysis</h3>
         <label for="food-image">Choose an image of food:</label>
+        <img
+          id="image-preview"
+          style="max-width: 300px; display: none"
+          alt="Food Image Preview"
+        />
         <input
           type="file"
           id="food-image"
@@ -162,11 +252,6 @@
         />
         <button type="submit">Upload and Analyze</button>
       </form>
-      <img
-        id="image-preview"
-        style="max-width: 300px; display: none"
-        alt="Food Image Preview"
-      />
       <div id="image-analysis-result"></div>
     </div>
 
@@ -485,22 +570,28 @@
 
     <!-- Logo -->
     <div class="logo-container">
-      <img src={{url_for('static', filename='healthy365logo.png')}} alt="Healthy365 Logo" style="max-width: 200px;" />
+      <img src={{url_for('static', filename='healthy365logo.png')}}
+      alt="Healthy365 Logo" style="max-width: 200px;" />
     </div>
 
     <!-- JavaScript to handle form submissions and display results -->
     <script>
-
-       // Tab switching logic
-       document.querySelectorAll('.tab').forEach((tab) => {
-        tab.addEventListener('click', () => {
+      // Tab switching logic
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
           // Remove active class from all tabs and contents
-          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach((content) => content.classList.remove('active'));
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((content) => content.classList.remove("active"));
 
           // Add active class to the clicked tab and its corresponding content
-          tab.classList.add('active');
-          document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+          tab.classList.add("active");
+          document
+            .getElementById(tab.getAttribute("data-tab"))
+            .classList.add("active");
         });
       });
 
