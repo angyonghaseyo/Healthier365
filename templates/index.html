@@ -4,489 +4,494 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nutri365</title>
+    <style>
+      /* Basic styles for tabs */
+      .tabs {
+        display: flex;
+        cursor: pointer;
+        background-color: #f1f1f1;
+        margin-bottom: 10px;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        border-bottom: none;
+        background-color: #e2e2e2;
+        margin-right: 5px;
+      }
+
+      .tab.active {
+        background-color: #ffffff;
+        border-top: 2px solid #4caf50;
+      }
+
+      .tab-content {
+        display: none;
+        border: 1px solid #ccc;
+        padding: 15px;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+    </style>
   </head>
   <body>
     <h1>Welcome to Nutri365</h1>
 
-    <!-- Health Information Form -->
-    <form id="health-info-form">
-      <h3>Enter Your Health Information</h3>
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <div class="tab active" data-tab="health-info">Health Information</div>
+      <div class="tab" data-tab="nutrition-analysis">Nutrition Analysis</div>
+      <div class="tab" data-tab="image-upload">Image Upload</div>
+      <div class="tab" data-tab="meal-suggestion">Meal Suggestion</div>
+      <div class="tab" data-tab="dietary-advice">Dietary Advice</div>
+      <div class="tab" data-tab="meal-plan">Meal Plan</div>
+    </div>
 
-      <!-- Age -->
-      <label for="age">Age:</label>
-      <input type="number" id="age" name="age" min="1" max="120" required />
-      <br />
+    <!-- Tab Content -->
+    <div id="health-info" class="tab-content active">
+      <!-- Health Information Form -->
+      <form id="health-info-form">
+        <h3>Enter Your Health Information</h3>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="1" max="120" required />
+        <br />
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+          <option value="">Select your gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        <br />
+        <label for="weight">Weight (kg):</label>
+        <input
+          type="number"
+          id="weight"
+          name="weight"
+          min="1"
+          max="300"
+          required
+        />
+        <br />
+        <label for="height">Height (cm):</label>
+        <input
+          type="number"
+          id="height"
+          name="height"
+          min="50"
+          max="250"
+          required
+        />
+        <br />
+        <label for="health_conditions"
+          >Select any existing health conditions:</label
+        >
+        <br />
+        <input
+          type="checkbox"
+          id="diabetes"
+          name="health_conditions"
+          value="diabetes"
+        />
+        <label for="diabetes">Diabetes</label>
+        <br />
+        <input
+          type="checkbox"
+          id="high_blood_pressure"
+          name="health_conditions"
+          value="high_blood_pressure"
+        />
+        <label for="high_blood_pressure">High Blood Pressure</label>
+        <br />
+        <input
+          type="checkbox"
+          id="heart_disease"
+          name="health_conditions"
+          value="heart_disease"
+        />
+        <label for="heart_disease">Heart Disease</label>
+        <br />
+        <input
+          type="checkbox"
+          id="high_cholesterol"
+          name="health_conditions"
+          value="high_cholesterol"
+        />
+        <label for="high_cholesterol">High Cholesterol</label>
+        <br />
+        <label for="include_health">Include this information in planning:</label>
+        <input type="checkbox" id="include_health" name="include_health" />
+        <br />
+        <button type="submit">Save Health Information</button>
+      </form>
+      <div id="health-info-result"></div>
+    </div>
 
-      <!-- Gender -->
-      <label for="gender">Gender:</label>
-      <select id="gender" name="gender" required>
-        <option value="">Select your gender</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
-      <br />
+    <div id="nutrition-analysis" class="tab-content">
+      <!-- Nutritional Analysis Form -->
+      <form id="nutrition-analysis-form">
+        <h3>Analyze Meal's Nutrition</h3>
+        <label for="meal">Search for a local dish:</label>
+        <input type="text" id="meal" name="meal" required />
+        <button type="submit">Analyze Nutrition</button>
+      </form>
+      <div id="nutrition-analysis-result"></div>
+    </div>
 
-      <!-- Weight -->
-      <label for="weight">Weight (kg):</label>
-      <input
-        type="number"
-        id="weight"
-        name="weight"
-        min="1"
-        max="300"
-        required
+    <div id="image-upload" class="tab-content">
+      <!-- Image Upload Form -->
+      <form id="image-upload-form" enctype="multipart/form-data">
+        <h3>Upload Food Image for Nutritional Analysis</h3>
+        <label for="food-image">Choose an image of food:</label>
+        <input
+          type="file"
+          id="food-image"
+          name="food-image"
+          accept="image/*"
+          required
+        />
+        <button type="submit">Upload and Analyze</button>
+      </form>
+      <img
+        id="image-preview"
+        style="max-width: 300px; display: none"
+        alt="Food Image Preview"
       />
-      <br />
+      <div id="image-analysis-result"></div>
+    </div>
 
-      <!-- Height -->
-      <label for="height">Height (cm):</label>
-      <input
-        type="number"
-        id="height"
-        name="height"
-        min="50"
-        max="250"
-        required
-      />
-      <br />
+    <div id="meal-suggestion" class="tab-content">
+      <!-- Meal Suggestion Form -->
+      <form id="meal-suggestion-form">
+        <h3>Get a Meal Suggestion</h3>
+        <label for="preferences">Select your food preferences:</label>
+        <select id="preferences" name="preferences" required>
+          <option value="">Select your preference</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="pescatarian">Pescatarian</option>
+          <option value="omnivore">Omnivore</option>
+          <option value="keto">Keto</option>
+          <option value="paleo">Paleo</option>
+          <option value="low-carb">Low Carb</option>
+        </select>
+        <br />
+        <label for="dietary_restrictions"
+          >Select any dietary restrictions:</label
+        >
+        <br />
+        <input
+          type="checkbox"
+          id="gluten_free"
+          name="dietary_restrictions"
+          value="gluten_free"
+        />
+        <label for="gluten_free">Gluten-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="dairy_free"
+          name="dietary_restrictions"
+          value="dairy_free"
+        />
+        <label for="dairy_free">Dairy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="nut_free"
+          name="dietary_restrictions"
+          value="nut_free"
+        />
+        <label for="nut_free">Nut-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="soy_free"
+          name="dietary_restrictions"
+          value="soy_free"
+        />
+        <label for="soy_free">Soy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="egg_free"
+          name="dietary_restrictions"
+          value="egg_free"
+        />
+        <label for="egg_free">Egg-Free</label>
+        <br />
+        <label for="goal">Select your health goal:</label>
+        <select id="goal" name="goal" required>
+          <option value="">Select your goal</option>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="muscle_gain">Muscle Gain</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="energy_boost">Energy Boost</option>
+          <option value="balanced_diet">Balanced Diet</option>
+        </select>
+        <br />
+        <label for="meal_type">Select meal type:</label>
+        <select id="meal_type" name="meal_type" required>
+          <option value="">Select meal type</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+          <option value="dessert">Dessert</option>
+        </select>
+        <br />
+        <label for="cuisine">Select cuisine preference:</label>
+        <select id="cuisine" name="cuisine" required>
+          <option value="">Select cuisine</option>
+          <option value="asian">Asian</option>
+          <option value="mediterranean">Mediterranean</option>
+          <option value="italian">Italian</option>
+          <option value="mexican">Mexican</option>
+          <option value="american">American</option>
+          <option value="indian">Indian</option>
+        </select>
+        <br />
+        <button type="submit">Get Meal Suggestion</button>
+      </form>
+      <div id="meal-suggestion-result"></div>
+    </div>
 
-      <!-- Health Conditions -->
-      <label for="health_conditions"
-        >Select any existing health conditions:</label
-      >
-      <br />
-      <input
-        type="checkbox"
-        id="diabetes"
-        name="health_conditions"
-        value="diabetes"
-      />
-      <label for="diabetes">Diabetes</label>
-      <br />
-      <input
-        type="checkbox"
-        id="high_blood_pressure"
-        name="health_conditions"
-        value="high_blood_pressure"
-      />
-      <label for="high_blood_pressure">High Blood Pressure</label>
-      <br />
-      <input
-        type="checkbox"
-        id="heart_disease"
-        name="health_conditions"
-        value="heart_disease"
-      />
-      <label for="heart_disease">Heart Disease</label>
-      <br />
-      <input
-        type="checkbox"
-        id="high_cholesterol"
-        name="health_conditions"
-        value="high_cholesterol"
-      />
-      <label for="high_cholesterol">High Cholesterol</label>
-      <br />
+    <div id="dietary-advice" class="tab-content">
+      <!-- Dietary Advice Form -->
+      <form id="dietary-advice-form">
+        <h3>Get Dietary Advice</h3>
+        <label for="current_diet">Select your current diet type:</label>
+        <select id="current_diet" name="current_diet" required>
+          <option value="">Select your current diet</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="pescatarian">Pescatarian</option>
+          <option value="omnivore">Omnivore</option>
+          <option value="keto">Keto</option>
+          <option value="paleo">Paleo</option>
+          <option value="low-carb">Low Carb</option>
+        </select>
+        <br />
+        <label for="advice_goal">Select your health goal:</label>
+        <select id="advice_goal" name="advice_goal" required>
+          <option value="">Select your health goal</option>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="muscle_gain">Muscle Gain</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="energy_boost">Energy Boost</option>
+          <option value="balanced_diet">Balanced Diet</option>
+        </select>
+        <br />
+        <label for="activity_level">Select your activity level:</label>
+        <select id="activity_level" name="activity_level" required>
+          <option value="">Select your activity level</option>
+          <option value="sedentary">Sedentary (Little or no exercise)</option>
+          <option value="lightly_active">
+            Lightly Active (Light exercise/sports 1-3 days a week)
+          </option>
+          <option value="moderately_active">
+            Moderately Active (Moderate exercise/sports 3-5 days a week)
+          </option>
+          <option value="very_active">
+            Very Active (Hard exercise/sports 6-7 days a week)
+          </option>
+          <option value="extra_active">
+            Extra Active (Very hard exercise/sports or a physical job)
+          </option>
+        </select>
+        <br />
+        <label for="preferred_meal_types">Select preferred meal types:</label>
+        <select
+          id="preferred_meal_types"
+          name="preferred_meal_types"
+          multiple
+          required
+        >
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+          <option value="dessert">Dessert</option>
+        </select>
+        <br />
+        <label for="allergies">Select any allergies or intolerances:</label>
+        <br />
+        <input
+          type="checkbox"
+          id="gluten_allergy"
+          name="allergies"
+          value="gluten_free"
+        />
+        <label for="gluten_allergy">Gluten-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="dairy_allergy"
+          name="allergies"
+          value="dairy_free"
+        />
+        <label for="dairy_allergy">Dairy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="nut_allergy"
+          name="allergies"
+          value="nut_free"
+        />
+        <label for="nut_allergy">Nut-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="soy_allergy"
+          name="allergies"
+          value="soy_free"
+        />
+        <label for="soy_allergy">Soy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="egg_allergy"
+          name="allergies"
+          value="egg_free"
+        />
+        <label for="egg_allergy">Egg-Free</label>
+        <br />
+        <button type="submit">Get Dietary Advice</button>
+      </form>
+      <div id="dietary-advice-result"></div>
+    </div>
 
-      <!-- Include Health Consideration -->
-      <label for="include_health">Include this information in planning:</label>
-      <input type="checkbox" id="include_health" name="include_health" />
-      <br />
-
-      <!-- Submit Button -->
-      <button type="submit">Save Health Information</button>
-    </form>
-
-    <div id="health-info-result"></div>
-    <br />
-
-     <!-- Nutritional Analysis Form -->
-     <form id="nutrition-analysis-form">
-      <h3>Analyze Meal's Nutrition</h3>
-      <label for="meal">Search for a local dish:</label>
-      <input type="text" id="meal" name="meal" required />
-      <button type="submit">Analyze Nutrition</button>
-    </form>
-    <div id="nutrition-analysis-result"></div>
-    <br />
-
-     <!-- Image Upload Form -->
-     <form id="image-upload-form" enctype="multipart/form-data">
-      <h3>Upload Food Image for Nutritional Analysis</h3>
-      <label for="food-image">Choose an image of food:</label>
-      <input
-        type="file"
-        id="food-image"
-        name="food-image"
-        accept="image/*"
-        required
-      />
-      <button type="submit">Upload and Analyze</button>
-    </form>
-    <img
-      id="image-preview"
-      style="max-width: 300px; display: none"
-      alt="Food Image Preview"
-    />
-    <div id="image-analysis-result"></div>
-    <br />
-
-    <!-- Meal Suggestion Form -->
-    <form id="meal-suggestion-form">
-      <h3>Get a Meal Suggestion</h3>
-
-      <!-- Food Preferences -->
-      <label for="preferences">Select your food preferences:</label>
-      <select id="preferences" name="preferences" required>
-        <option value="">Select your preference</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
-        <option value="pescatarian">Pescatarian</option>
-        <option value="omnivore">Omnivore</option>
-        <option value="keto">Keto</option>
-        <option value="paleo">Paleo</option>
-        <option value="low-carb">Low Carb</option>
-      </select>
-      <br />
-
-      <!-- Dietary Restrictions -->
-      <label for="dietary_restrictions">Select any dietary restrictions:</label>
-      <br />
-      <input
-        type="checkbox"
-        id="gluten_free"
-        name="dietary_restrictions"
-        value="gluten_free"
-      />
-      <label for="gluten_free">Gluten-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="dairy_free"
-        name="dietary_restrictions"
-        value="dairy_free"
-      />
-      <label for="dairy_free">Dairy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="nut_free"
-        name="dietary_restrictions"
-        value="nut_free"
-      />
-      <label for="nut_free">Nut-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="soy_free"
-        name="dietary_restrictions"
-        value="soy_free"
-      />
-      <label for="soy_free">Soy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="egg_free"
-        name="dietary_restrictions"
-        value="egg_free"
-      />
-      <label for="egg_free">Egg-Free</label>
-      <br />
-
-      <!-- Health Goals -->
-      <label for="goal">Select your health goal:</label>
-      <select id="goal" name="goal" required>
-        <option value="">Select your goal</option>
-        <option value="weight_loss">Weight Loss</option>
-        <option value="muscle_gain">Muscle Gain</option>
-        <option value="maintenance">Maintenance</option>
-        <option value="energy_boost">Energy Boost</option>
-        <option value="balanced_diet">Balanced Diet</option>
-      </select>
-      <br />
-
-      <!-- Meal Type -->
-      <label for="meal_type">Select meal type:</label>
-      <select id="meal_type" name="meal_type" required>
-        <option value="">Select meal type</option>
-        <option value="breakfast">Breakfast</option>
-        <option value="lunch">Lunch</option>
-        <option value="dinner">Dinner</option>
-        <option value="snack">Snack</option>
-        <option value="dessert">Dessert</option>
-      </select>
-      <br />
-
-      <!-- Cuisine Preference -->
-      <label for="cuisine">Select cuisine preference:</label>
-      <select id="cuisine" name="cuisine" required>
-        <option value="">Select cuisine</option>
-        <option value="asian">Asian</option>
-        <option value="mediterranean">Mediterranean</option>
-        <option value="italian">Italian</option>
-        <option value="mexican">Mexican</option>
-        <option value="american">American</option>
-        <option value="indian">Indian</option>
-      </select>
-      <br />
-
-      <!-- Submit Button -->
-      <button type="submit">Get Meal Suggestion</button>
-    </form>
-
-    <!-- Meal Suggestion Result -->
-    <div id="meal-suggestion-result"></div>
-    <br />
-
-    <!-- Dietary Advice Form -->
-    <form id="dietary-advice-form">
-      <h3>Get Dietary Advice</h3>
-
-      <!-- Current Diet Description -->
-      <label for="current_diet">Select your current diet type:</label>
-      <select id="current_diet" name="current_diet" required>
-        <option value="">Select your current diet</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
-        <option value="pescatarian">Pescatarian</option>
-        <option value="omnivore">Omnivore</option>
-        <option value="keto">Keto</option>
-        <option value="paleo">Paleo</option>
-        <option value="low-carb">Low Carb</option>
-      </select>
-      <br />
-
-      <!-- Health Goals -->
-      <label for="advice_goal">Select your health goal:</label>
-      <select id="advice_goal" name="advice_goal" required>
-        <option value="">Select your health goal</option>
-        <option value="weight_loss">Weight Loss</option>
-        <option value="muscle_gain">Muscle Gain</option>
-        <option value="maintenance">Maintenance</option>
-        <option value="energy_boost">Energy Boost</option>
-        <option value="balanced_diet">Balanced Diet</option>
-      </select>
-      <br />
-
-      <!-- Activity Level -->
-      <label for="activity_level">Select your activity level:</label>
-      <select id="activity_level" name="activity_level" required>
-        <option value="">Select your activity level</option>
-        <option value="sedentary">Sedentary (Little or no exercise)</option>
-        <option value="lightly_active">
-          Lightly Active (Light exercise/sports 1-3 days a week)
-        </option>
-        <option value="moderately_active">
-          Moderately Active (Moderate exercise/sports 3-5 days a week)
-        </option>
-        <option value="very_active">
-          Very Active (Hard exercise/sports 6-7 days a week)
-        </option>
-        <option value="extra_active">
-          Extra Active (Very hard exercise/sports or a physical job)
-        </option>
-      </select>
-      <br />
-
-      <!-- Preferred Meal Types -->
-      <label for="preferred_meal_types">Select preferred meal types:</label>
-      <select
-        id="preferred_meal_types"
-        name="preferred_meal_types"
-        multiple
-        required
-      >
-        <option value="breakfast">Breakfast</option>
-        <option value="lunch">Lunch</option>
-        <option value="dinner">Dinner</option>
-        <option value="snack">Snack</option>
-        <option value="dessert">Dessert</option>
-      </select>
-      <br />
-
-      <!-- Allergies or Intolerances -->
-      <label for="allergies">Select any allergies or intolerances:</label>
-      <br />
-      <input
-        type="checkbox"
-        id="gluten_allergy"
-        name="allergies"
-        value="gluten_free"
-      />
-      <label for="gluten_allergy">Gluten-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="dairy_allergy"
-        name="allergies"
-        value="dairy_free"
-      />
-      <label for="dairy_allergy">Dairy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="nut_allergy"
-        name="allergies"
-        value="nut_free"
-      />
-      <label for="nut_allergy">Nut-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="soy_allergy"
-        name="allergies"
-        value="soy_free"
-      />
-      <label for="soy_allergy">Soy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="egg_allergy"
-        name="allergies"
-        value="egg_free"
-      />
-      <label for="egg_allergy">Egg-Free</label>
-      <br />
-
-      <!-- Submit Button -->
-      <button type="submit">Get Dietary Advice</button>
-    </form>
-
-    <!-- Dietary Advice Result -->
-    <div id="dietary-advice-result"></div>
-    <br />
-
-    <!-- Meal Plan Creation Form -->
-    <!-- Meal Plan Creation Form -->
-    <form id="meal-plan-form">
-      <h3>Create a Meal Plan</h3>
-
-      <!-- Food Preferences -->
-      <label for="plan_preferences">Select your food preferences:</label>
-      <select id="plan_preferences" name="plan_preferences" required>
-        <option value="">Select your preference</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
-        <option value="pescatarian">Pescatarian</option>
-        <option value="omnivore">Omnivore</option>
-        <option value="keto">Keto</option>
-        <option value="paleo">Paleo</option>
-        <option value="low-carb">Low Carb</option>
-      </select>
-      <br />
-
-      <!-- Dietary Restrictions -->
-      <label for="plan_dietary_restrictions"
-        >Select any dietary restrictions:</label
-      >
-      <br />
-      <input
-        type="checkbox"
-        id="gluten_free_plan"
-        name="plan_dietary_restrictions"
-        value="gluten_free"
-      />
-      <label for="gluten_free_plan">Gluten-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="dairy_free_plan"
-        name="plan_dietary_restrictions"
-        value="dairy_free"
-      />
-      <label for="dairy_free_plan">Dairy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="nut_free_plan"
-        name="plan_dietary_restrictions"
-        value="nut_free"
-      />
-      <label for="nut_free_plan">Nut-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="soy_free_plan"
-        name="plan_dietary_restrictions"
-        value="soy_free"
-      />
-      <label for="soy_free_plan">Soy-Free</label>
-      <br />
-      <input
-        type="checkbox"
-        id="egg_free_plan"
-        name="plan_dietary_restrictions"
-        value="egg_free"
-      />
-      <label for="egg_free_plan">Egg-Free</label>
-      <br />
-
-      <!-- Health Goals -->
-      <label for="plan_goal">Select your health goal:</label>
-      <select id="plan_goal" name="plan_goal" required>
-        <option value="">Select your health goal</option>
-        <option value="weight_loss">Weight Loss</option>
-        <option value="muscle_gain">Muscle Gain</option>
-        <option value="maintenance">Maintenance</option>
-        <option value="energy_boost">Energy Boost</option>
-        <option value="balanced_diet">Balanced Diet</option>
-      </select>
-      <br />
-
-      <!-- Activity Level -->
-      <label for="activity_level_plan">Select your activity level:</label>
-      <select id="activity_level_plan" name="activity_level_plan" required>
-        <option value="">Select your activity level</option>
-        <option value="sedentary">Sedentary (Little or no exercise)</option>
-        <option value="lightly_active">
-          Lightly Active (Light exercise/sports 1-3 days a week)
-        </option>
-        <option value="moderately_active">
-          Moderately Active (Moderate exercise/sports 3-5 days a week)
-        </option>
-        <option value="very_active">
-          Very Active (Hard exercise/sports 6-7 days a week)
-        </option>
-        <option value="extra_active">
-          Extra Active (Very hard exercise/sports or a physical job)
-        </option>
-      </select>
-      <br />
-
-      <!-- Cuisine Preference -->
-      <label for="plan_cuisine">Select preferred cuisines:</label>
-      <select id="plan_cuisine" name="plan_cuisine" multiple required>
-        <option value="asian">Asian</option>
-        <option value="mediterranean">Mediterranean</option>
-        <option value="italian">Italian</option>
-        <option value="mexican">Mexican</option>
-        <option value="american">American</option>
-        <option value="indian">Indian</option>
-      </select>
-      <br />
-
-      <!-- Meal Types -->
-      <label for="meal_types_plan">Select preferred meal types:</label>
-      <select id="meal_types_plan" name="meal_types_plan" multiple required>
-        <option value="breakfast">Breakfast</option>
-        <option value="lunch">Lunch</option>
-        <option value="dinner">Dinner</option>
-        <option value="snack">Snack</option>
-        <option value="dessert">Dessert</option>
-      </select>
-      <br />
-
-      <!-- Submit Button -->
-      <button type="submit">Create Meal Plan</button>
-    </form>
-
-    <!-- Meal Plan Result -->
-    <div id="meal-plan-result"></div>
-    <br />
+    <div id="meal-plan" class="tab-content">
+      <!-- Meal Plan Creation Form -->
+      <form id="meal-plan-form">
+        <h3>Create a Meal Plan</h3>
+        <label for="plan_preferences">Select your food preferences:</label>
+        <select id="plan_preferences" name="plan_preferences" required>
+          <option value="">Select your preference</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="pescatarian">Pescatarian</option>
+          <option value="omnivore">Omnivore</option>
+          <option value="keto">Keto</option>
+          <option value="paleo">Paleo</option>
+          <option value="low-carb">Low Carb</option>
+        </select>
+        <br />
+        <label for="plan_dietary_restrictions"
+          >Select any dietary restrictions:</label
+        >
+        <br />
+        <input
+          type="checkbox"
+          id="gluten_free_plan"
+          name="plan_dietary_restrictions"
+          value="gluten_free"
+        />
+        <label for="gluten_free_plan">Gluten-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="dairy_free_plan"
+          name="plan_dietary_restrictions"
+          value="dairy_free"
+        />
+        <label for="dairy_free_plan">Dairy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="nut_free_plan"
+          name="plan_dietary_restrictions"
+          value="nut_free"
+        />
+        <label for="nut_free_plan">Nut-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="soy_free_plan"
+          name="plan_dietary_restrictions"
+          value="soy_free"
+        />
+        <label for="soy_free_plan">Soy-Free</label>
+        <br />
+        <input
+          type="checkbox"
+          id="egg_free_plan"
+          name="plan_dietary_restrictions"
+          value="egg_free"
+        />
+        <label for="egg_free_plan">Egg-Free</label>
+        <br />
+        <label for="plan_goal">Select your health goal:</label>
+        <select id="plan_goal" name="plan_goal" required>
+          <option value="">Select your health goal</option>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="muscle_gain">Muscle Gain</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="energy_boost">Energy Boost</option>
+          <option value="balanced_diet">Balanced Diet</option>
+        </select>
+        <br />
+        <label for="activity_level_plan">Select your activity level:</label>
+        <select id="activity_level_plan" name="activity_level_plan" required>
+          <option value="">Select your activity level</option>
+          <option value="sedentary">Sedentary (Little or no exercise)</option>
+          <option value="lightly_active">
+            Lightly Active (Light exercise/sports 1-3 days a week)
+          </option>
+          <option value="moderately_active">
+            Moderately Active (Moderate exercise/sports 3-5 days a week)
+          </option>
+          <option value="very_active">
+            Very Active (Hard exercise/sports 6-7 days a week)
+          </option>
+          <option value="extra_active">
+            Extra Active (Very hard exercise/sports or a physical job)
+          </option>
+        </select>
+        <br />
+        <label for="plan_cuisine">Select preferred cuisines:</label>
+        <select id="plan_cuisine" name="plan_cuisine" multiple required>
+          <option value="asian">Asian</option>
+          <option value="mediterranean">Mediterranean</option>
+          <option value="italian">Italian</option>
+          <option value="mexican">Mexican</option>
+          <option value="american">American</option>
+          <option value="indian">Indian</option>
+        </select>
+        <br />
+        <label for="meal_types_plan">Select preferred meal types:</label>
+        <select id="meal_types_plan" name="meal_types_plan" multiple required>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+          <option value="dessert">Dessert</option>
+        </select>
+        <br />
+        <button type="submit">Create Meal Plan</button>
+      </form>
+      <div id="meal-plan-result"></div>
+    </div>
 
     <!-- JavaScript to handle form submissions and display results -->
     <script>
+
+       // Tab switching logic
+       document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and contents
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach((content) => content.classList.remove('active'));
+
+          // Add active class to the clicked tab and its corresponding content
+          tab.classList.add('active');
+          document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+        });
+      });
+      
       // Function to handle API requests and update the result
       async function handleFormSubmission(
         formId,
