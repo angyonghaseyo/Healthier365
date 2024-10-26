@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Healthy365 AI Meal Planner</title>
+  </head>
+  <body>
+    <h1>Welcome to the Healthy365 AI Meal Planner</h1>
+
+    <!-- Meal Suggestion Form -->
+    <form id="meal-suggestion-form">
+      <h3>Get a Meal Suggestion</h3>
+      <label for="preferences">Enter your food preferences:</label>
+      <input type="text" id="preferences" name="preferences" required />
+      <br />
+      <label for="dietary_restrictions">Enter any dietary restrictions:</label>
+      <input
+        type="text"
+        id="dietary_restrictions"
+        name="dietary_restrictions"
+        required
+      />
+      <br />
+      <label for="goal"
+        >Enter your health goal (e.g., weight loss, muscle gain):</label
+      >
+      <input type="text" id="goal" name="goal" required />
+      <button type="submit">Get Meal Suggestion</button>
+    </form>
+    <div id="meal-suggestion-result"></div>
+    <br />
+
+    <!-- Nutritional Analysis Form -->
+    <form id="nutrition-analysis-form">
+      <h3>Analyze Meal's Nutrition</h3>
+      <label for="meal">Enter meal description:</label>
+      <input type="text" id="meal" name="meal" required />
+      <button type="submit">Analyze Nutrition</button>
+    </form>
+    <div id="nutrition-analysis-result"></div>
+    <br />
+
+    <!-- Dietary Advice Form -->
+    <form id="dietary-advice-form">
+      <h3>Get Dietary Advice</h3>
+      <label for="current_diet">Enter your current diet description:</label>
+      <input type="text" id="current_diet" name="current_diet" required />
+      <br />
+      <label for="advice_goal">Enter your health goal:</label>
+      <input type="text" id="advice_goal" name="advice_goal" required />
+      <button type="submit">Get Dietary Advice</button>
+    </form>
+    <div id="dietary-advice-result"></div>
+    <br />
+
+    <!-- Meal Plan Creation Form -->
+    <form id="meal-plan-form">
+      <h3>Create a Meal Plan</h3>
+      <label for="plan_preferences">Enter your food preferences:</label>
+      <input
+        type="text"
+        id="plan_preferences"
+        name="plan_preferences"
+        required
+      />
+      <br />
+      <label for="plan_dietary_restrictions"
+        >Enter any dietary restrictions:</label
+      >
+      <input
+        type="text"
+        id="plan_dietary_restrictions"
+        name="plan_dietary_restrictions"
+        required
+      />
+      <br />
+      <label for="plan_goal">Enter your health goal:</label>
+      <input type="text" id="plan_goal" name="plan_goal" required />
+      <br />
+      <label for="duration">Meal plan duration (e.g., 7 days):</label>
+      <input
+        type="text"
+        id="duration"
+        name="duration"
+        value="7 days"
+        required
+      />
+      <button type="submit">Create Meal Plan</button>
+    </form>
+    <div id="meal-plan-result"></div>
+    <br />
+
+    <!-- Image Upload Form -->
+    <form id="image-upload-form" enctype="multipart/form-data">
+      <h3>Upload Food Image for Nutritional Analysis</h3>
+      <label for="food-image">Choose an image of food:</label>
+      <input
+        type="file"
+        id="food-image"
+        name="food-image"
+        accept="image/*"
+        required
+      />
+      <button type="submit">Upload and Analyze</button>
+    </form>
+    <img id="image-preview" style="max-width: 300px; display: none;" alt="Food Image Preview" />
+    <div id="image-analysis-result"></div>
+    <br />
+
+    <!-- JavaScript to handle form submissions and display results -->
+    <script>
+      // Function to handle API requests and update the result
+      async function handleFormSubmission(
+        formId,
+        apiEndpoint,
+        resultDivId,
+        inputData
+      ) {
+        const form = document.getElementById(formId);
+        const resultDiv = document.getElementById(resultDivId);
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const data = {};
+          inputData.forEach((id) => {
+            const inputField = document.getElementById(id);
+            data[id] = inputField.value;
+          });
+
+          console.log(data);
+
+          try {
+            const response = await fetch(apiEndpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+            console.log(response);
+            const result = await response.json();
+            if (result.error) {
+              resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
+            } else {
+              // Display the result
+              resultDiv.innerHTML = `<p><strong>Result:</strong> ${JSON.stringify(
+                result
+              )}</p>`;
+            }
+          } catch (error) {
+            resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+          }
+        });
+      }
+
+        // Function to handle image upload, display the image preview, and make API call
+  document.getElementById('food-image').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      // Display the image preview
+      const preview = document.getElementById('image-preview');
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block'; // Show the image preview
+      };
+      
+      reader.readAsDataURL(file); // Convert the image file to a data URL
+    }
+  });
+  // Function to handle image upload and API call
+  document.getElementById('image-upload-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const fileInput = document.getElementById('food-image');
+    const file = fileInput.files[0];
+    
+    // Read the image as Base64
+    const reader = new FileReader();
+    reader.onload = async function () {
+      const base64Image = reader.result.split(',')[1]; // Remove the base64 prefix
+
+      try {
+        const response = await fetch('/api/image_analysis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ image: base64Image })
+        });
+        const result = await response.json();
+        const resultDiv = document.getElementById('image-analysis-result');
+
+        if (result.error) {
+          resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
+        } else {
+          // Display the analysis result
+          resultDiv.innerHTML = `<p><strong>Nutrition Facts:</strong> ${JSON.stringify(result.nutritional_facts)}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+      }
+    };
+    
+    reader.readAsDataURL(file); // Convert image to Base64
+  });
+
+      // Attach form submission handlers
+      handleFormSubmission(
+        "meal-suggestion-form",
+        "/api/meal_suggestion",
+        "meal-suggestion-result",
+        ["preferences", "dietary_restrictions", "goal"]
+      );
+      handleFormSubmission(
+        "nutrition-analysis-form",
+        "/api/nutrition_analysis",
+        "nutrition-analysis-result",
+        ["meal"]
+      );
+      handleFormSubmission(
+        "dietary-advice-form",
+        "/api/dietary_advice",
+        "dietary-advice-result",
+        ["current_diet", "advice_goal"]
+      );
+      handleFormSubmission(
+        "meal-plan-form",
+        "/api/meal_plan",
+        "meal-plan-result",
+        [
+          "plan_preferences",
+          "plan_dietary_restrictions",
+          "plan_goal",
+          "duration",
+        ]
+      );
+    </script>
+  </body>
+</html>
