@@ -58,10 +58,10 @@ Visit http://localhost:3000 in your browser.
 Python with Flask
 
 ## Features
-- AI-Powered Meal Suggestions (MVP 1): Generate personalized meal recommendations based on user preferences, dietary restrictions, and health goals using advanced AI algorithms.
-- Nutritional Analysis & Tracking (Future MVP): Provide real-time nutritional breakdowns and track daily intake, helping users maintain balanced diets and monitor nutrient consumption.
-- AI-Based Dietary Advice (Future MVP): Offer tailored dietary guidance to users based on their current eating habits and health goals, fostering sustainable lifestyle changes.
-- Personalized Meal Plans (Future MVP): Create customizable meal plans for users, offering weekly or monthly plans that adapt to their specific health objectives and preferences.
+- AI-Powered Meal Suggestions: Generate personalized meal recommendations based on user preferences, dietary restrictions, and health goals using advanced AI algorithms.
+- Nutritional Analysis & Tracking: Provide real-time nutritional breakdowns and track daily intake, helping users maintain balanced diets and monitor nutrient consumption.
+- AI-Based Dietary Advice: Offer tailored dietary guidance to users based on their current eating habits and health goals, fostering sustainable lifestyle changes.
+- Personalized Meal Plans: Create customizable meal plans for users, offering weekly or monthly plans that adapt to their specific health objectives and preferences.
 
 ## Contributing
 We welcome contributions! If you find a bug or have suggestions for improvement, please open an issue or submit a pull request.
