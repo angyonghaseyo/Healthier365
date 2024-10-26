@@ -34,7 +34,7 @@ def generate_chat_response(prompt, system_message="You are a nutrition and meal 
 # Helper function to encode the image and interact with OpenAI API
 def analyze_food_image(base64_image):
     # Creating a prompt to send to OpenAI for analysis
-    prompt = "Analyze the nutritional content of the food in this image."
+    prompt = "Please provide a detailed nutritional analysis of the food in this image, including Carbohydrates, Proteins, Fats, Vitamins, Minerals, Dietary fibre, and Water."
 
     response = openai.ChatCompletion.create(
     model="gpt-4o-mini",
@@ -44,7 +44,7 @@ def analyze_food_image(base64_image):
         "content": [
             {
             "type": "text",
-            "text": "Please provide a detailed nutritional analysis of the food in this image, including Carbohydrates, Proteins, Fats, Vitamins, Minerals, Dietary fibre, and Water.",
+            "text": prompt,
             },
             {
             "type": "image_url",
@@ -58,17 +58,30 @@ def analyze_food_image(base64_image):
 )
     return response['choices'][0]['message']['content'].strip()
 
+# Update the helper functions to include health considerations
+def generate_prompt_with_health_info(base_prompt, health_info=None):
+    if health_info:
+        health_prompt = (
+            f"\n\nAdditional health information to consider:\n"
+            f"- Age: {health_info.get('age', 'Not provided')}\n"
+            f"- Gender: {health_info.get('gender', 'Not provided')}\n"
+            f"- Weight: {health_info.get('weight', 'Not provided')} kg\n"
+            f"- Height: {health_info.get('height', 'Not provided')} cm\n"
+            f"- Health conditions: {', '.join(health_info.get('health_conditions', [])) if health_info.get('health_conditions') else 'None'}"
+        )
+        return base_prompt + health_prompt
+    return base_prompt
 
-# Meal Suggestion Function
-def suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine):
-    prompt = (
+# Update the suggest_meal, provide_dietary_advice, and create_meal_plan functions accordingly
+def suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine, health_info):
+    base_prompt = (
         f"Suggest a {meal_type} based on the following preferences: {preferences}, "
         f"dietary restrictions: {dietary_restrictions}, health goal: {goal}, "
         f"and cuisine preference: {cuisine}."
     )
+    prompt = generate_prompt_with_health_info(base_prompt, health_info)
     meal_suggestion = generate_chat_response(prompt, max_tokens=150)
     return meal_suggestion
-
 
 # Nutritional Analysis Function
 def analyze_nutrition(meal):
@@ -77,23 +90,25 @@ def analyze_nutrition(meal):
     return nutrition_analysis
 
 # Dietary Advice Function
-def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies):
+def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies, health_info):
     # Create a detailed prompt using all the provided inputs
-    prompt = (
+    base_prompt = (
         f"Provide dietary advice to achieve the health goal: '{goal}' "
         f"given the current diet: '{current_diet}', activity level: '{activity_level}', "
         f"preferred meal types: {', '.join(preferred_meal_types)}, and "
         f"allergies or intolerances: {', '.join(allergies) if allergies else 'None'}."
     )
     
+    prompt = generate_prompt_with_health_info(base_prompt, health_info)
     dietary_advice = generate_chat_response(prompt, max_tokens=150)
     return dietary_advice
 
 
 # Personalized Meal Planning Function
-def create_meal_plan(preferences, dietary_restrictions, goal, duration=1, activity_level=None, cuisine=None, meal_types=None):
+def create_meal_plan(preferences, dietary_restrictions, goal, activity_level, cuisine, meal_types, health_info):
+    duration = 1  # Default duration for the meal plan
     # Create a detailed prompt with more specific information, considering location (Singapore) and user preferences
-    prompt = (
+    base_prompt = (
         f"Create a {duration} day meal plan in Singapore with the following details:\n"
         f"- Food preferences: {preferences}\n"
         f"- Dietary restrictions: {', '.join(dietary_restrictions) if dietary_restrictions else 'None'}\n"
@@ -104,6 +119,7 @@ def create_meal_plan(preferences, dietary_restrictions, goal, duration=1, activi
         f"Include time, location, date, food items, and detailed nutritional information for each food item."
     )
     
+    prompt = generate_prompt_with_health_info(base_prompt, health_info)
     meal_plan = generate_chat_response(prompt, max_tokens=400)
     return meal_plan
 
@@ -118,9 +134,10 @@ def meal_suggestion_api():
         goal = data['goal']
         meal_type = data['meal_type']
         cuisine = data['cuisine']
+        health_info = data.get('health_info', {})
 
         # Pass the new fields to the suggest_meal function
-        meal_suggestion = suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine)
+        meal_suggestion = suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine, health_info)
         return jsonify({'meal_suggestion': meal_suggestion})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -145,9 +162,10 @@ def dietary_advice_api():
         activity_level = data.get('activity_level', '')
         preferred_meal_types = data.get('preferred_meal_types', [])
         allergies = data.get('allergies', [])
+        health_info = data.get('health_info', {})
 
         # Pass the new fields to the provide_dietary_advice function
-        dietary_advice = provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies)
+        dietary_advice = provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies, health_info)
         return jsonify({'dietary_advice': dietary_advice})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -163,9 +181,10 @@ def meal_plan_api():
         activity_level = data.get('activity_level_plan', '')
         cuisine = data.get('plan_cuisine', [])
         meal_types = data.get('meal_types_plan', [])
+        health_info = data.get('health_info_plan', {})
 
         # Pass the new fields to the create_meal_plan function
-        meal_plan = create_meal_plan(preferences, dietary_restrictions, goal, activity_level, cuisine, meal_types)
+        meal_plan = create_meal_plan(preferences, dietary_restrictions, goal, activity_level, cuisine, meal_types, health_info)
         return jsonify({'meal_plan': meal_plan})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

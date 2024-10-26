@@ -8,6 +8,99 @@
   <body>
     <h1>Welcome to Nutri365</h1>
 
+    <!-- Health Information Form -->
+    <form id="health-info-form">
+      <h3>Enter Your Health Information</h3>
+
+      <!-- Age -->
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" min="1" max="120" required />
+      <br />
+
+      <!-- Gender -->
+      <label for="gender">Gender:</label>
+      <select id="gender" name="gender" required>
+        <option value="">Select your gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <br />
+
+      <!-- Weight -->
+      <label for="weight">Weight (kg):</label>
+      <input
+        type="number"
+        id="weight"
+        name="weight"
+        min="1"
+        max="300"
+        required
+      />
+      <br />
+
+      <!-- Height -->
+      <label for="height">Height (cm):</label>
+      <input
+        type="number"
+        id="height"
+        name="height"
+        min="50"
+        max="250"
+        required
+      />
+      <br />
+
+      <!-- Health Conditions -->
+      <label for="health_conditions"
+        >Select any existing health conditions:</label
+      >
+      <br />
+      <input
+        type="checkbox"
+        id="diabetes"
+        name="health_conditions"
+        value="diabetes"
+      />
+      <label for="diabetes">Diabetes</label>
+      <br />
+      <input
+        type="checkbox"
+        id="high_blood_pressure"
+        name="health_conditions"
+        value="high_blood_pressure"
+      />
+      <label for="high_blood_pressure">High Blood Pressure</label>
+      <br />
+      <input
+        type="checkbox"
+        id="heart_disease"
+        name="health_conditions"
+        value="heart_disease"
+      />
+      <label for="heart_disease">Heart Disease</label>
+      <br />
+      <input
+        type="checkbox"
+        id="high_cholesterol"
+        name="health_conditions"
+        value="high_cholesterol"
+      />
+      <label for="high_cholesterol">High Cholesterol</label>
+      <br />
+
+      <!-- Include Health Consideration -->
+      <label for="include_health">Include this information in planning:</label>
+      <input type="checkbox" id="include_health" name="include_health" />
+      <br />
+
+      <!-- Submit Button -->
+      <button type="submit">Save Health Information</button>
+    </form>
+
+    <div id="health-info-result"></div>
+    <br />
+
     <!-- Meal Suggestion Form -->
     <form id="meal-suggestion-form">
       <h3>Get a Meal Suggestion</h3>
@@ -411,9 +504,7 @@
           inputData.forEach((idOrName) => {
             const inputField = document.getElementById(idOrName);
 
-            // Check for checkboxes or multi-select fields
             if (!inputField) {
-              // If the input field is not found by ID, check if it's a checkbox group or name-based input
               const checkboxes = document.querySelectorAll(
                 `input[name="${idOrName}"]:checked`
               );
@@ -427,18 +518,21 @@
                 );
               }
             } else if (inputField.type === "checkbox") {
-              // Handle individual checkboxes
               data[idOrName] = inputField.checked ? inputField.value : "";
             } else if (inputField.tagName === "SELECT" && inputField.multiple) {
-              // Handle multi-select dropdowns
               data[idOrName] = Array.from(inputField.selectedOptions).map(
                 (option) => option.value
               );
             } else {
-              // Regular input fields
               data[idOrName] = inputField.value;
             }
           });
+
+          // Get health information if needed
+          const healthInfo = getHealthInfo();
+          if (healthInfo) {
+            data.health_info = healthInfo;
+          }
 
           console.log(data);
 
@@ -455,7 +549,6 @@
             if (result.error) {
               resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
             } else {
-              // Display the result
               resultDiv.innerHTML = `<p><strong>Result:</strong> ${JSON.stringify(
                 result
               )}</p>`;
@@ -526,6 +619,48 @@
 
           reader.readAsDataURL(file); // Convert image to Base64
         });
+
+      // Save health information to local storage
+      document
+        .getElementById("health-info-form")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          // Gather health data
+          const healthData = {
+            age: document.getElementById("age").value,
+            gender: document.getElementById("gender").value,
+            weight: document.getElementById("weight").value,
+            height: document.getElementById("height").value,
+            health_conditions: Array.from(
+              document.querySelectorAll(
+                'input[name="health_conditions"]:checked'
+              )
+            ).map((checkbox) => checkbox.value),
+            include_health: document.getElementById("include_health").checked,
+          };
+
+          // Save health information to localStorage
+          localStorage.setItem("healthInfo", JSON.stringify(healthData));
+
+          // Show a message based on the inclusion checkbox
+          const message = healthData.include_health
+            ? "Health information saved! It will be taken into account for your meal and dietary planning."
+            : "Health information saved! It will not be used in your meal and dietary planning.";
+
+          const color = healthData.include_health ? "green" : "red";
+
+          // Update the result div with the message and color
+          document.getElementById(
+            "health-info-result"
+          ).innerHTML = `<p style="color:${color};">${message}</p>`;
+        });
+
+      // Function to get health information from localStorage
+      function getHealthInfo() {
+        const healthInfo = JSON.parse(localStorage.getItem("healthInfo")) || {};
+        return healthInfo.include_health ? healthInfo : null;
+      }
 
       // Attach form submission handlers
       handleFormSubmission(
