@@ -28,7 +28,7 @@ Before you start, make sure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/bransome/ClientClutch](https://github.com/bransometan/Nutri365.git
+git clone https://github.com/bransometan/Nutri365.git
 cd Nutri365
 
 # Install dependencies
