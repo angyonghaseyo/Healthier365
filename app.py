@@ -77,10 +77,18 @@ def analyze_nutrition(meal):
     return nutrition_analysis
 
 # Dietary Advice Function
-def provide_dietary_advice(goal, current_diet):
-    prompt = f"Provide dietary advice to achieve the health goal: '{goal}' given the current diet: '{current_diet}'."
+def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies):
+    # Create a detailed prompt using all the provided inputs
+    prompt = (
+        f"Provide dietary advice to achieve the health goal: '{goal}' "
+        f"given the current diet: '{current_diet}', activity level: '{activity_level}', "
+        f"preferred meal types: {', '.join(preferred_meal_types)}, and "
+        f"allergies or intolerances: {', '.join(allergies) if allergies else 'None'}."
+    )
+    
     dietary_advice = generate_chat_response(prompt, max_tokens=150)
     return dietary_advice
+
 
 # Personalized Meal Planning Function
 def create_meal_plan(preferences, dietary_restrictions, goal, duration='7 days'):
@@ -122,10 +130,16 @@ def dietary_advice_api():
         data = request.get_json()
         goal = data['advice_goal']
         current_diet = data['current_diet']
-        dietary_advice = provide_dietary_advice(goal, current_diet)
+        activity_level = data.get('activity_level', '')
+        preferred_meal_types = data.get('preferred_meal_types', [])
+        allergies = data.get('allergies', [])
+
+        # Pass the new fields to the provide_dietary_advice function
+        dietary_advice = provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies)
         return jsonify({'dietary_advice': dietary_advice})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/meal_plan', methods=['POST'])
 def meal_plan_api():
