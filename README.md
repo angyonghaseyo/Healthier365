@@ -28,8 +28,8 @@ Before you start, make sure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/bransome/ClientClutch](https://github.com/bransometan/DBTT_AIMealPlanner.git
-cd DBTT_AIMealPlanner
+git clone https://github.com/bransome/ClientClutch](https://github.com/bransometan/Nutri365.git
+cd Nutri365
 
 # Install dependencies
 pip install -r requirements.txt
