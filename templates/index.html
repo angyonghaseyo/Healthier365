@@ -3,31 +3,115 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Healthy365 AI Meal Planner</title>
+    <title>Nutri365</title>
   </head>
   <body>
-    <h1>Welcome to the Healthy365 AI Meal Planner</h1>
+    <h1>Welcome to Nutri365</h1>
 
     <!-- Meal Suggestion Form -->
     <form id="meal-suggestion-form">
       <h3>Get a Meal Suggestion</h3>
-      <label for="preferences">Enter your food preferences:</label>
-      <input type="text" id="preferences" name="preferences" required />
+
+      <!-- Food Preferences -->
+      <label for="preferences">Select your food preferences:</label>
+      <select id="preferences" name="preferences" required>
+        <option value="">Select your preference</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+        <option value="pescatarian">Pescatarian</option>
+        <option value="omnivore">Omnivore</option>
+        <option value="keto">Keto</option>
+        <option value="paleo">Paleo</option>
+        <option value="low-carb">Low Carb</option>
+      </select>
       <br />
-      <label for="dietary_restrictions">Enter any dietary restrictions:</label>
+
+      <!-- Dietary Restrictions -->
+      <label for="dietary_restrictions">Select any dietary restrictions:</label>
+      <br />
       <input
-        type="text"
-        id="dietary_restrictions"
+        type="checkbox"
+        id="gluten_free"
         name="dietary_restrictions"
-        required
+        value="gluten_free"
       />
+      <label for="gluten_free">Gluten-Free</label>
       <br />
-      <label for="goal"
-        >Enter your health goal (e.g., weight loss, muscle gain):</label
-      >
-      <input type="text" id="goal" name="goal" required />
+      <input
+        type="checkbox"
+        id="dairy_free"
+        name="dietary_restrictions"
+        value="dairy_free"
+      />
+      <label for="dairy_free">Dairy-Free</label>
+      <br />
+      <input
+        type="checkbox"
+        id="nut_free"
+        name="dietary_restrictions"
+        value="nut_free"
+      />
+      <label for="nut_free">Nut-Free</label>
+      <br />
+      <input
+        type="checkbox"
+        id="soy_free"
+        name="dietary_restrictions"
+        value="soy_free"
+      />
+      <label for="soy_free">Soy-Free</label>
+      <br />
+      <input
+        type="checkbox"
+        id="egg_free"
+        name="dietary_restrictions"
+        value="egg_free"
+      />
+      <label for="egg_free">Egg-Free</label>
+      <br />
+
+      <!-- Health Goals -->
+      <label for="goal">Select your health goal:</label>
+      <select id="goal" name="goal" required>
+        <option value="">Select your goal</option>
+        <option value="weight_loss">Weight Loss</option>
+        <option value="muscle_gain">Muscle Gain</option>
+        <option value="maintenance">Maintenance</option>
+        <option value="energy_boost">Energy Boost</option>
+        <option value="balanced_diet">Balanced Diet</option>
+      </select>
+      <br />
+
+      <!-- Meal Type -->
+      <label for="meal_type">Select meal type:</label>
+      <select id="meal_type" name="meal_type" required>
+        <option value="">Select meal type</option>
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snack">Snack</option>
+        <option value="dessert">Dessert</option>
+      </select>
+      <br />
+
+      <!-- Cuisine Preference -->
+      <label for="cuisine">Select cuisine preference:</label>
+      <select id="cuisine" name="cuisine" required>
+        <option value="">Select cuisine</option>
+        <option value="asian">Asian</option>
+        <option value="mediterranean">Mediterranean</option>
+        <option value="italian">Italian</option>
+        <option value="mexican">Mexican</option>
+        <option value="american">American</option>
+        <option value="indian">Indian</option>
+      </select>
+      <br />
+
+      <!-- Submit Button -->
       <button type="submit">Get Meal Suggestion</button>
     </form>
+
+    <!-- Meal Suggestion Result -->
     <div id="meal-suggestion-result"></div>
     <br />
 
@@ -104,7 +188,11 @@
       />
       <button type="submit">Upload and Analyze</button>
     </form>
-    <img id="image-preview" style="max-width: 300px; display: none;" alt="Food Image Preview" />
+    <img
+      id="image-preview"
+      style="max-width: 300px; display: none"
+      alt="Food Image Preview"
+    />
     <div id="image-analysis-result"></div>
     <br />
 
@@ -126,7 +214,21 @@
           const data = {};
           inputData.forEach((id) => {
             const inputField = document.getElementById(id);
-            data[id] = inputField.value;
+
+            // Handle checkboxes (dietary restrictions) separately
+            if (!inputField) {
+              const checkboxes = document.querySelectorAll(
+                `input[name="${id}"]:checked`
+              );
+              console.log("checkboxes", checkboxes);
+              data[id] = Array.from(checkboxes).map(
+                (checkbox) => checkbox.value
+              );
+            } else if (inputField) {
+              data[id] = inputField.value;
+            } else {
+              console.warn(`Element with ID '${id}' not found.`);
+            }
           });
 
           console.log(data);
@@ -155,65 +257,73 @@
         });
       }
 
-        // Function to handle image upload, display the image preview, and make API call
-  document.getElementById('food-image').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-      // Display the image preview
-      const preview = document.getElementById('image-preview');
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = 'block'; // Show the image preview
-      };
-      
-      reader.readAsDataURL(file); // Convert the image file to a data URL
-    }
-  });
-  // Function to handle image upload and API call
-  document.getElementById('image-upload-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    
-    const fileInput = document.getElementById('food-image');
-    const file = fileInput.files[0];
-    
-    // Read the image as Base64
-    const reader = new FileReader();
-    reader.onload = async function () {
-      const base64Image = reader.result.split(',')[1]; // Remove the base64 prefix
+      // Function to handle image upload, display the image preview, and make API call
+      document
+        .getElementById("food-image")
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          if (file) {
+            // Display the image preview
+            const preview = document.getElementById("image-preview");
+            const reader = new FileReader();
 
-      try {
-        const response = await fetch('/api/image_analysis', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ image: base64Image })
+            reader.onload = function (e) {
+              preview.src = e.target.result;
+              preview.style.display = "block"; // Show the image preview
+            };
+
+            reader.readAsDataURL(file); // Convert the image file to a data URL
+          }
         });
-        const result = await response.json();
-        const resultDiv = document.getElementById('image-analysis-result');
+      // Function to handle image upload and API call
+      document
+        .getElementById("image-upload-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
 
-        if (result.error) {
-          resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
-        } else {
-          // Display the analysis result
-          resultDiv.innerHTML = `<p><strong>Nutrition Facts:</strong> ${JSON.stringify(result.nutritional_facts)}</p>`;
-        }
-      } catch (error) {
-        resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-      }
-    };
-    
-    reader.readAsDataURL(file); // Convert image to Base64
-  });
+          const fileInput = document.getElementById("food-image");
+          const file = fileInput.files[0];
+
+          // Read the image as Base64
+          const reader = new FileReader();
+          reader.onload = async function () {
+            const base64Image = reader.result.split(",")[1]; // Remove the base64 prefix
+
+            try {
+              const response = await fetch("/api/image_analysis", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ image: base64Image }),
+              });
+              const result = await response.json();
+              const resultDiv = document.getElementById(
+                "image-analysis-result"
+              );
+
+              if (result.error) {
+                resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
+              } else {
+                // Display the analysis result
+                resultDiv.innerHTML = `<p><strong>Nutrition Facts:</strong> ${JSON.stringify(
+                  result.nutritional_facts
+                )}</p>`;
+              }
+            } catch (error) {
+              resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+          };
+
+          reader.readAsDataURL(file); // Convert image to Base64
+        });
 
       // Attach form submission handlers
       handleFormSubmission(
         "meal-suggestion-form",
         "/api/meal_suggestion",
         "meal-suggestion-result",
-        ["preferences", "dietary_restrictions", "goal"]
+        ["preferences", "dietary_restrictions", "goal", "meal_type", "cuisine"]
       );
       handleFormSubmission(
         "nutrition-analysis-form",

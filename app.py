@@ -60,10 +60,15 @@ def analyze_food_image(base64_image):
 
 
 # Meal Suggestion Function
-def suggest_meal(preferences, dietary_restrictions, goal):
-    prompt = f"Suggest a meal based on the following preferences: {preferences}, dietary restrictions: {dietary_restrictions}, and health goal: {goal}."
+def suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine):
+    prompt = (
+        f"Suggest a {meal_type} based on the following preferences: {preferences}, "
+        f"dietary restrictions: {dietary_restrictions}, health goal: {goal}, "
+        f"and cuisine preference: {cuisine}."
+    )
     meal_suggestion = generate_chat_response(prompt, max_tokens=150)
     return meal_suggestion
+
 
 # Nutritional Analysis Function
 def analyze_nutrition(meal):
@@ -91,10 +96,15 @@ def meal_suggestion_api():
         preferences = data['preferences']
         dietary_restrictions = data['dietary_restrictions']
         goal = data['goal']
-        meal_suggestion = suggest_meal(preferences, dietary_restrictions, goal)
+        meal_type = data['meal_type']
+        cuisine = data['cuisine']
+
+        # Pass the new fields to the suggest_meal function
+        meal_suggestion = suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine)
         return jsonify({'meal_suggestion': meal_suggestion})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/nutrition_analysis', methods=['POST'])
 def nutrition_analysis_api():
