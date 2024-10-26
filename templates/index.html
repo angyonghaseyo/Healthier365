@@ -8,7 +8,7 @@
       /* General Style */
       body {
         font-family: Arial, sans-serif;
-   
+
         color: #333;
         margin: 0;
         padding: 0;
@@ -20,6 +20,32 @@
         color: #0077cc;
         margin-top: 20px;
         font-weight: normal;
+      }
+
+      /* Loading Spinner */
+      .loading-spinner {
+        display: none; /* Initially hidden */
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #0077cc;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
 
       /* Tabs */
@@ -139,6 +165,12 @@
       <div class="tab" data-tab="dietary-advice">Dietary Advice</div>
       <div class="tab" data-tab="meal-plan">Meal Plan</div>
     </div>
+
+     <!-- Loading Indicator -->
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
 
     <!-- Tab Content -->
     <div id="health-info" class="tab-content active">
@@ -576,6 +608,17 @@
 
     <!-- JavaScript to handle form submissions and display results -->
     <script>
+      // Function to show/hide the loading indicator
+      function toggleLoading(show) {
+        const loadingSpinner = document.querySelector(".loading-spinner");
+
+        // Check if the loading spinner exists
+        if (loadingSpinner) {
+          loadingSpinner.style.display = show ? "block" : "none";
+        } else {
+          console.warn("Loading spinner element not found.");
+        }
+      }
       // Tab switching logic
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -607,6 +650,9 @@
 
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
+
+          // Show loading indicator
+          toggleLoading(true);
 
           const data = {};
           inputData.forEach((idOrName) => {
@@ -654,6 +700,8 @@
             });
             console.log(response);
             const result = await response.json();
+            // Hide loading indicator
+            toggleLoading(false);
             if (result.error) {
               resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
             } else {
@@ -662,6 +710,8 @@
               )}</p>`;
             }
           } catch (error) {
+            // Hide loading indicator
+            toggleLoading(false);
             resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
           }
         });
@@ -691,6 +741,9 @@
         .addEventListener("submit", async (event) => {
           event.preventDefault();
 
+           // Show loading indicator
+           toggleLoading(true);
+
           const fileInput = document.getElementById("food-image");
           const file = fileInput.files[0];
 
@@ -708,6 +761,7 @@
                 body: JSON.stringify({ image: base64Image }),
               });
               const result = await response.json();
+              toggleLoading(false); // Hide loading indicator
               const resultDiv = document.getElementById(
                 "image-analysis-result"
               );
@@ -721,6 +775,8 @@
                 )}</p>`;
               }
             } catch (error) {
+              // Hide loading indicator
+              toggleLoading(false);
               resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
             }
           };
