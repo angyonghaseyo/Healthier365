@@ -244,16 +244,21 @@
                       >
                     </label>
                   </div>
-                  <label
+                    <label
                     for="include_health"
                     class="block text-sm font-medium text-gray-700 mt-4"
                     >Include this information in planning:</label
-                  >
-                  <input
-                    type="checkbox"
-                    id="include_health"
-                    class="rounded border-gray-300 text-blue-600"
-                  />
+                    >
+                    <div class="flex items-center mt-3">
+                      <input
+                        type="checkbox"
+                        id="include_health"
+                        class="rounded border-gray-300 text-blue-600"
+                      />
+                      <p class="text-xs text-gray-500 ml-2">
+                        Note: This information will only be used for meal suggestion, dietary advice, and meal plan.
+                      </p>
+                    </div>
                 </div>
                 <button
                   type="submit"
@@ -261,6 +266,7 @@
                 >
                   Save Health Information
                 </button>
+                
                 <div id="health-info-result" class="mt-6"></div>
               </form>
             </div>
