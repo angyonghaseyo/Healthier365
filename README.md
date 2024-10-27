@@ -56,6 +56,7 @@ Visit http://localhost:3000 in your browser.
 
 ## Tech Stack
 - Python with Flask
+- TailwindCSS
 - OpenAI
 
 ## Features
