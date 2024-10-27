@@ -1,449 +1,924 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nutri365 - Your AI Meal Planner</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --hpb-blue: #0072BC;
-            --hpb-red: #ED1C24;
-            --hpb-green: #00A651;
-        }
+      :root {
+        --hpb-blue: #0072bc;
+        --hpb-red: #ed1c24;
+        --hpb-green: #00a651;
+      }
 
-        .tab-content {
-            display: none;
-        }
+      .tab-content {
+        display: none;
+      }
 
-        .tab-content.active {
-            display: block;
-        }
+      .tab-content.active {
+        display: block;
+      }
 
-        .custom-tab {
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
+      .custom-tab {
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+      }
 
-        .custom-tab.active {
-            border-bottom: 3px solid var(--hpb-blue);
-            color: var(--hpb-blue);
-        }
+      .custom-tab.active {
+        border-bottom: 3px solid var(--hpb-blue);
+        color: var(--hpb-blue);
+      }
 
-        .loading-spinner {
-            display: none;
-        }
+      .loading-spinner {
+        display: none;
+      }
 
-        .loading-spinner.show {
-            display: flex;
-        }
+      .loading-spinner.show {
+        display: flex;
+      }
 
-        .custom-button {
-            background-color: var(--hpb-blue);
-            transition: all 0.3s ease;
-        }
+      .custom-button {
+        background-color: var(--hpb-blue);
+        transition: all 0.3s ease;
+      }
 
-        .custom-button:hover {
-            background-color: #005a94;
-        }
+      .custom-button:hover {
+        background-color: #005a94;
+      }
 
-        .checkbox-container {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            padding: 0.5rem;
-            margin: 0.5rem 0;
-        }
+      .checkbox-container {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+      }
     </style>
-</head>
-<body class="bg-gray-50">
+  </head>
+
+  <body class="bg-gray-50">
     <div class="min-h-screen">
-        <!-- Header -->
-        <header class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-gray-900">Nutri365</h1>
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div
+          class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between"
+        >
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Nutri365</h1>
+          </div>
+          <img
+            src="{{ url_for('static', filename='healthy365logo.png') }}"
+            alt="Healthy365 Logo"
+            class="h-12 w-auto"
+          />
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Tabs -->
+        <div class="border-b border-gray-200 mb-8">
+          <nav class="flex space-x-8" aria-label="Tabs">
+            <button
+              class="custom-tab active px-3 py-2 text-sm font-medium"
+              data-tab="health-info"
+            >
+              Health Information
+            </button>
+            <button
+              class="custom-tab px-3 py-2 text-sm font-medium"
+              data-tab="nutrition-analysis"
+            >
+              Nutrition Analysis
+            </button>
+            <button
+              class="custom-tab px-3 py-2 text-sm font-medium"
+              data-tab="image-upload"
+            >
+              Image Upload
+            </button>
+            <button
+              class="custom-tab px-3 py-2 text-sm font-medium"
+              data-tab="meal-suggestion"
+            >
+              Meal Suggestion
+            </button>
+            <button
+              class="custom-tab px-3 py-2 text-sm font-medium"
+              data-tab="dietary-advice"
+            >
+              Dietary Advice
+            </button>
+            <button
+              class="custom-tab px-3 py-2 text-sm font-medium"
+              data-tab="meal-plan"
+            >
+              Meal Plan
+            </button>
+          </nav>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="space-y-8">
+          <!-- Health Information -->
+          <div id="health-info" class="tab-content active">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">
+                Enter Your Health Information
+              </h2>
+              <form id="health-info-form">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="age"
+                      >Age</label
+                    >
+                    <input
+                      id="age"
+                      type="number"
+                      min="1"
+                      max="120"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="gender"
+                      >Gender</label
+                    >
+                    <select
+                      id="gender"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="weight"
+                      >Weight (kg)</label
+                    >
+                    <input
+                      id="weight"
+                      type="number"
+                      min="1"
+                      max="300"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="height"
+                      >Height (cm)</label
+                    >
+                    <input
+                      id="height"
+                      type="number"
+                      min="50"
+                      max="250"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
                 </div>
-                <img src={{url_for('static', filename='healthy365logo.png')}}
-      alt="Healthy365 Logo" class="h-12 w-auto">
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Health Conditions</label
+                  >
+                  <div class="grid grid-cols-2 gap-4">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="diabetes"
+                        name="health_conditions"
+                        value="diabetes"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Diabetes</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="high_blood_pressure"
+                        name="health_conditions"
+                        value="high_blood_pressure"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700"
+                        >High Blood Pressure</span
+                      >
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="heart_disease"
+                        name="health_conditions"
+                        value="heart_disease"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Heart Disease</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="high_cholesterol"
+                        name="health_conditions"
+                        value="high_cholesterol"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700"
+                        >High Cholesterol</span
+                      >
+                    </label>
+                  </div>
+                  <label
+                    for="include_health"
+                    class="block text-sm font-medium text-gray-700 mt-4"
+                    >Include this information in planning:</label
+                  >
+                  <input
+                    type="checkbox"
+                    id="include_health"
+                    class="rounded border-gray-300 text-blue-600"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="custom-button mt-6 px-4 py-2 text-white rounded-md"
+                >
+                  Save Health Information
+                </button>
+                <div id="health-info-result" class="mt-6"></div>
+              </form>
             </div>
-        </header>
+          </div>
 
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <!-- Tabs -->
-            <div class="border-b border-gray-200 mb-8">
-                <nav class="flex space-x-8" aria-label="Tabs">
-                    <button class="custom-tab active px-3 py-2 text-sm font-medium" data-tab="health-info">Health Information</button>
-                    <button class="custom-tab px-3 py-2 text-sm font-medium" data-tab="nutrition-analysis">Nutrition Analysis</button>
-                    <button class="custom-tab px-3 py-2 text-sm font-medium" data-tab="image-upload">Image Upload</button>
-                    <button class="custom-tab px-3 py-2 text-sm font-medium" data-tab="meal-suggestion">Meal Suggestion</button>
-                    <button class="custom-tab px-3 py-2 text-sm font-medium" data-tab="dietary-advice">Dietary Advice</button>
-                    <button class="custom-tab px-3 py-2 text-sm font-medium" data-tab="meal-plan">Meal Plan</button>
-                </nav>
+          <!-- Nutrition Analysis -->
+          <div id="nutrition-analysis" class="tab-content">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">
+                Analyze Meal's Nutrition
+              </h2>
+              <form id="nutrition-analysis-form">
+                <div class="max-w-xl">
+                  <label
+                    class="block text-sm font-medium text-gray-700"
+                    for="meal"
+                    >Search for a local dish:</label
+                  >
+                  <input
+                    id="meal"
+                    type="text"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    class="custom-button mt-4 px-4 py-2 text-white rounded-md"
+                  >
+                    Analyze Nutrition
+                  </button>
+                </div>
+                <div id="nutrition-analysis-result" class="mt-6"></div>
+              </form>
             </div>
+          </div>
 
-            <!-- Tab Contents -->
-            <div class="space-y-8">
-                <!-- Health Information -->
-                <div id="health-info" class="tab-content active">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Enter Your Health Information</h2>
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Age</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Gender</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your gender</option>
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Weight (kg)</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Height (cm)</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                            </div>
-                        </div>
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Health Conditions</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Diabetes</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">High Blood Pressure</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Heart Disease</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">High Cholesterol</span>
-                                </label>
-                            </div>
-                        </div>
-                        <button class="custom-button mt-6 px-4 py-2 text-white rounded-md">Save Health Information</button>
-                        <div id="health-info-result" class="mt-6"></div>
-                    </div>
+          <!-- Image Upload -->
+          <div id="image-upload" class="tab-content">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">
+                Upload Food Image for Nutritional Analysis
+              </h2>
+              <form id="image-upload-form" enctype="multipart/form-data">
+                <div class="max-w-xl">
+                  <label
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    for="food-image"
+                    >Choose an image of food:</label
+                  >
+                  <input
+                    id="food-image"
+                    type="file"
+                    accept="image/*"
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    required
+                  />
+                  <!-- Image Preview -->
+                  <img
+                    id="image-preview"
+                    class="hidden mt-4 max-w-full rounded-lg shadow-lg border border-gray-300"
+                    alt="Food Image Preview"
+                  />
+                  <button
+                    type="submit"
+                    class="custom-button mt-4 px-4 py-2 text-white rounded-md"
+                  >
+                    Upload and Analyze
+                  </button>
                 </div>
-
-                <!-- Nutrition Analysis -->
-                <div id="nutrition-analysis" class="tab-content">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Analyze Meal's Nutrition</h2>
-                        <div class="max-w-xl">
-                            <input type="text" placeholder="Search for a local dish" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                            <button class="custom-button mt-4 px-4 py-2 text-white rounded-md">Analyze Nutrition</button>
-                        </div>
-                        <div id="nutrition-analysis-result" class="mt-6"></div>
-                    </div>
-                </div>
-
-                <!-- Image Upload -->
-                <div id="image-upload" class="tab-content">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Upload Food Image for Nutritional Analysis</h2>
-                        <div class="max-w-xl">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Choose an image of food</label>
-                            <input type="file" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            <button class="custom-button mt-4 px-4 py-2 text-white rounded-md">Upload and Analyze</button>
-                        </div>
-                        <div id="image-analysis-result" class="mt-6"></div>
-                    </div>
-                </div>
-
-                <!-- Meal Suggestion -->
-                <div id="meal-suggestion" class="tab-content">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Get a Meal Suggestion</h2>
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Food Preferences</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your preference</option>
-                                    <option>Vegetarian</option>
-                                    <option>Vegan</option>
-                                    <option>Pescatarian</option>
-                                    <option>Omnivore</option>
-                                    <option>Keto</option>
-                                    <option>Paleo</option>
-                                    <option>Low Carb</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Health Goal</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your goal</option>
-                                    <option>Weight Loss</option>
-                                    <option>Muscle Gain</option>
-                                    <option>Maintenance</option>
-                                    <option>Energy Boost</option>
-                                    <option>Balanced Diet</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Meal Type</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select meal type</option>
-                                    <option>Breakfast</option>
-                                    <option>Lunch</option>
-                                    <option>Dinner</option>
-                                    <option>Snack</option>
-                                    <option>Dessert</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Cuisine Preference</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select cuisine</option>
-                                    <option>Asian</option>
-                                    <option>Mediterranean</option>
-                                    <option>Italian</option>
-                                    <option>Mexican</option>
-                                    <option>American</option>
-                                    <option>Indian</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Dietary Restrictions</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Gluten-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Dairy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Nut-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Soy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Egg-Free</span>
-                                </label>
-                            </div>
-                        </div>
-                        <button class="custom-button mt-6 px-4 py-2 text-white rounded-md">Get Meal Suggestion</button>
-                        <div id="meal-suggestion-result" class="mt-6"></div>
-                    </div>
-                </div>
-
-                <!-- Dietary Advice -->
-                <div id="dietary-advice" class="tab-content">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Get Dietary Advice</h2>
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Current Diet</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your current diet</option>
-                                    <option>Vegetarian</option>
-                                    <option>Vegan</option>
-                                    <option>Pescatarian</option>
-                                    <option>Omnivore</option>
-                                    <option>Keto</option>
-                                    <option>Paleo</option>
-                                    <option>Low Carb</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Activity Level</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your activity level</option>
-                                    <option>Sedentary (Little or no exercise)</option>
-                                    <option>Lightly Active (Light exercise/sports 1-3 days a week)</option>
-                                    <option>Moderately Active (Moderate exercise/sports 3-5 days a week)</option>
-                                    <option>Very Active (Hard exercise/sports 6-7 days a week)</option>
-                                    <option>Extra Active (Very hard exercise/sports or a physical job)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Meal Types</label>
-                            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Breakfast</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Lunch</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Dinner</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Snack</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Dessert</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Allergies or Intolerances</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Gluten-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Dairy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Nut-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Soy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Egg-Free</span>
-                                </label>
-                            </div>
-                        </div>
-                        <button class="custom-button mt-6 px-4 py-2 text-white rounded-md">Get Dietary Advice</button>
-                        <div id="dietary-advice-result" class="mt-6"></div>
-                    </div>
-                </div>
-
-                <!-- Meal Plan -->
-                <div id="meal-plan" class="tab-content">
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h2 class="text-xl font-semibold mb-6">Create a Meal Plan</h2>
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Food Preferences</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your preference</option>
-                                    <option>Vegetarian</option>
-                                    <option>Vegan</option>
-                                    <option>Pescatarian</option>
-                                    <option>Omnivore</option>
-                                    <option>Keto</option>
-                                    <option>Paleo</option>
-                                    <option>Low Carb</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Health Goal</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your health goal</option>
-                                    <option>Weight Loss</option>
-                                    <option>Muscle Gain</option>
-                                    <option>Maintenance</option>
-                                    <option>Energy Boost</option>
-                                    <option>Balanced Diet</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Activity Level</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option>Select your activity level</option>
-                                    <option>Sedentary (Little or no exercise)</option>
-                                    <option>Lightly Active (Light exercise/sports 1-3 days a week)</option>
-                                    <option>Moderately Active (Moderate exercise/sports 3-5 days a week)</option>
-                                    <option>Very Active (Hard exercise/sports 6-7 days a week)</option>
-                                    <option>Extra Active (Very hard exercise/sports or a physical job)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Cuisines</label>
-                            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Asian</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Mediterranean</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Italian</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Mexican</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">American</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Indian</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Dietary Restrictions</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Gluten-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Dairy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Nut-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Soy-Free</span>
-                                </label>
-                                <label class="checkbox-container flex items-center">
-                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 mr-2">
-                                    <span class="text-sm text-gray-700">Egg-Free</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <button class="custom-button mt-6 px-4 py-2 text-white rounded-md">Create Meal Plan</button>
-                        <div id="meal-plan-result" class="mt-6"></div>
-                    </div>
-                </div>
+                <div id="image-analysis-result" class="mt-6"></div>
+              </form>
             </div>
+          </div>
 
-            <!-- Loading Spinner -->
-            <div class="loading-spinner fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-                <div class="bg-white p-6 rounded-lg shadow-xl">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p class="mt-4 text-gray-700 text-center">Loading...</p>
+          <!-- Meal Suggestion -->
+          <div id="meal-suggestion" class="tab-content">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">Get a Meal Suggestion</h2>
+              <form id="meal-suggestion-form">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="preferences"
+                      >Food Preferences</label
+                    >
+                    <select
+                      id="preferences"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your preference</option>
+                      <option value="vegetarian">Vegetarian</option>
+                      <option value="vegan">Vegan</option>
+                      <option value="pescatarian">Pescatarian</option>
+                      <option value="omnivore">Omnivore</option>
+                      <option value="keto">Keto</option>
+                      <option value="paleo">Paleo</option>
+                      <option value="low-carb">Low Carb</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="goal"
+                      >Health Goal</label
+                    >
+                    <select
+                      id="goal"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your goal</option>
+                      <option value="weight_loss">Weight Loss</option>
+                      <option value="muscle_gain">Muscle Gain</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="energy_boost">Energy Boost</option>
+                      <option value="balanced_diet">Balanced Diet</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="meal_type"
+                      >Meal Type</label
+                    >
+                    <select
+                      id="meal_type"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select meal type</option>
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="snack">Snack</option>
+                      <option value="dessert">Dessert</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="cuisine"
+                      >Cuisine Preference</label
+                    >
+                    <select
+                      id="cuisine"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select cuisine</option>
+                      <option value="asian">Asian</option>
+                      <option value="mediterranean">Mediterranean</option>
+                      <option value="italian">Italian</option>
+                      <option value="mexican">Mexican</option>
+                      <option value="american">American</option>
+                      <option value="indian">Indian</option>
+                    </select>
+                  </div>
                 </div>
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Dietary Restrictions</label
+                  >
+                  <div class="grid grid-cols-2 gap-4">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="gluten_free"
+                        name="dietary_restrictions"
+                        value="gluten_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Gluten-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="dairy_free"
+                        name="dietary_restrictions"
+                        value="dairy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Dairy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="nut_free"
+                        name="dietary_restrictions"
+                        value="nut_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Nut-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="soy_free"
+                        name="dietary_restrictions"
+                        value="soy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Soy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="egg_free"
+                        name="dietary_restrictions"
+                        value="egg_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Egg-Free</span>
+                    </label>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="custom-button mt-6 px-4 py-2 text-white rounded-md"
+                >
+                  Get Meal Suggestion
+                </button>
+                <div id="meal-suggestion-result" class="mt-6"></div>
+              </form>
             </div>
-        </main>
+          </div>
+
+          <!-- Dietary Advice -->
+          <div id="dietary-advice" class="tab-content">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">Get Dietary Advice</h2>
+              <form id="dietary-advice-form">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="current_diet"
+                      >Current Diet</label
+                    >
+                    <select
+                      id="current_diet"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your current diet</option>
+                      <option value="vegetarian">Vegetarian</option>
+                      <option value="vegan">Vegan</option>
+                      <option value="pescatarian">Pescatarian</option>
+                      <option value="omnivore">Omnivore</option>
+                      <option value="keto">Keto</option>
+                      <option value="paleo">Paleo</option>
+                      <option value="low-carb">Low Carb</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="activity_level"
+                      >Activity Level</label
+                    >
+                    <select
+                      id="activity_level"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your activity level</option>
+                      <option value="sedentary">
+                        Sedentary (Little or no exercise)
+                      </option>
+                      <option value="lightly_active">
+                        Lightly Active (Light exercise 1-3 days a week)
+                      </option>
+                      <option value="moderately_active">
+                        Moderately Active (Exercise 3-5 days a week)
+                      </option>
+                      <option value="very_active">
+                        Very Active (Hard exercise 6-7 days a week)
+                      </option>
+                      <option value="extra_active">
+                        Extra Active (Very hard exercise or physical job)
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="advice_goal"
+                      >Health Goal</label
+                    >
+                    <select
+                      id="advice_goal"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your goal</option>
+                      <option value="weight_loss">Weight Loss</option>
+                      <option value="muscle_gain">Muscle Gain</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="energy_boost">Energy Boost</option>
+                      <option value="balanced_diet">Balanced Diet</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Preferred Meal Types</label
+                  >
+                  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="breakfast"
+                        name="preferred_meal_types"
+                        value="breakfast"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Breakfast</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="lunch"
+                        name="preferred_meal_types"
+                        value="lunch"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Lunch</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="dinner"
+                        name="preferred_meal_types"
+                        value="dinner"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Dinner</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="snack"
+                        name="preferred_meal_types"
+                        value="snack"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Snack</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="dessert"
+                        name="preferred_meal_types"
+                        value="dessert"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Dessert</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Allergies or Intolerances</label
+                  >
+                  <div class="grid grid-cols-2 gap-4">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="gluten_allergy"
+                        name="allergies"
+                        value="gluten_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Gluten-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="dairy_allergy"
+                        name="allergies"
+                        value="dairy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Dairy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="nut_allergy"
+                        name="allergies"
+                        value="nut_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Nut-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="soy_allergy"
+                        name="allergies"
+                        value="soy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Soy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="egg_allergy"
+                        name="allergies"
+                        value="egg_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Egg-Free</span>
+                    </label>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="custom-button mt-6 px-4 py-2 text-white rounded-md"
+                >
+                  Get Dietary Advice
+                </button>
+                <div id="dietary-advice-result" class="mt-6"></div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Meal Plan -->
+          <div id="meal-plan" class="tab-content">
+            <div class="bg-white shadow rounded-lg p-6">
+              <h2 class="text-xl font-semibold mb-6">Create a Meal Plan</h2>
+              <form id="meal-plan-form">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="plan_preferences"
+                      >Food Preferences</label
+                    >
+                    <select
+                      id="plan_preferences"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your preference</option>
+                      <option value="vegetarian">Vegetarian</option>
+                      <option value="vegan">Vegan</option>
+                      <option value="pescatarian">Pescatarian</option>
+                      <option value="omnivore">Omnivore</option>
+                      <option value="keto">Keto</option>
+                      <option value="paleo">Paleo</option>
+                      <option value="low-carb">Low Carb</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="plan_goal"
+                      >Health Goal</label
+                    >
+                    <select
+                      id="plan_goal"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your health goal</option>
+                      <option value="weight_loss">Weight Loss</option>
+                      <option value="muscle_gain">Muscle Gain</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="energy_boost">Energy Boost</option>
+                      <option value="balanced_diet">Balanced Diet</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium text-gray-700"
+                      for="activity_level_plan"
+                      >Activity Level</label
+                    >
+                    <select
+                      id="activity_level_plan"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="">Select your activity level</option>
+                      <option value="sedentary">
+                        Sedentary (Little or no exercise)
+                      </option>
+                      <option value="lightly_active">
+                        Lightly Active (Light exercise 1-3 days a week)
+                      </option>
+                      <option value="moderately_active">
+                        Moderately Active (Exercise 3-5 days a week)
+                      </option>
+                      <option value="very_active">
+                        Very Active (Hard exercise 6-7 days a week)
+                      </option>
+                      <option value="extra_active">
+                        Extra Active (Very hard exercise or physical job)
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Preferred Cuisines</label
+                  >
+                  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="asian_cuisine"
+                        name="plan_cuisine"
+                        value="asian"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Asian</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="mediterranean_cuisine"
+                        name="plan_cuisine"
+                        value="mediterranean"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Mediterranean</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="italian_cuisine"
+                        name="plan_cuisine"
+                        value="italian"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Italian</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="mexican_cuisine"
+                        name="plan_cuisine"
+                        value="mexican"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Mexican</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="american_cuisine"
+                        name="plan_cuisine"
+                        value="american"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">American</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="indian_cuisine"
+                        name="plan_cuisine"
+                        value="indian"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Indian</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Dietary Restrictions</label
+                  >
+                  <div class="grid grid-cols-2 gap-4">
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="gluten_free_plan"
+                        name="plan_dietary_restrictions"
+                        value="gluten_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Gluten-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="dairy_free_plan"
+                        name="plan_dietary_restrictions"
+                        value="dairy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Dairy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="nut_free_plan"
+                        name="plan_dietary_restrictions"
+                        value="nut_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Nut-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="soy_free_plan"
+                        name="plan_dietary_restrictions"
+                        value="soy_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Soy-Free</span>
+                    </label>
+                    <label class="checkbox-container flex items-center">
+                      <input
+                        type="checkbox"
+                        id="egg_free_plan"
+                        name="plan_dietary_restrictions"
+                        value="egg_free"
+                        class="rounded border-gray-300 text-blue-600 mr-2"
+                      />
+                      <span class="text-sm text-gray-700">Egg-Free</span>
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="custom-button mt-6 px-4 py-2 text-white rounded-md"
+                >
+                  Create Meal Plan
+                </button>
+                <div id="meal-plan-result" class="mt-6"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div
+          class="loading-spinner fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center"
+        >
+          <div class="bg-white p-6 rounded-lg shadow-xl">
+            <div
+              class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"
+            ></div>
+            <p class="mt-4 text-gray-700 text-center">Loading...</p>
+          </div>
+        </div>
+      </main>
     </div>
-    
+
     <!-- JavaScript to handle form submissions and display results -->
     <script>
       // Function to show/hide the loading indicator
@@ -452,23 +927,28 @@
 
         // Check if the loading spinner exists
         if (loadingSpinner) {
-          loadingSpinner.style.display = show ? "block" : "none";
+          loadingSpinner.style.display = show ? "flex" : "none";
         } else {
           console.warn("Loading spinner element not found.");
         }
       }
+
       // Tab switching logic
-      document.querySelectorAll('.custom-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs and content
-                document.querySelectorAll('.custom-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked tab and corresponding content
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-            });
+      document.querySelectorAll(".custom-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          // Remove active class from all tabs and content
+          document
+            .querySelectorAll(".custom-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((c) => c.classList.remove("active"));
+
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.tab).classList.add("active");
         });
+      });
 
       // Function to handle API requests and update the result
       async function handleFormSubmission(
@@ -516,6 +996,7 @@
 
           // Get health information if needed
           const healthInfo = getHealthInfo();
+          console.log(healthInfo);
           if (healthInfo) {
             data.health_info = healthInfo;
           }
@@ -530,7 +1011,6 @@
               },
               body: JSON.stringify(data),
             });
-            console.log(response);
             const result = await response.json();
             // Hide loading indicator
             toggleLoading(false);
@@ -549,7 +1029,43 @@
         });
       }
 
-      // Function to handle image upload, display the image preview, and make API call
+      // Save health information to local storage
+      document
+        .getElementById("health-info-form")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          // Gather health data
+          const healthData = {
+            age: document.getElementById("age").value,
+            gender: document.getElementById("gender").value,
+            weight: document.getElementById("weight").value,
+            height: document.getElementById("height").value,
+            health_conditions: Array.from(
+              document.querySelectorAll(
+                'input[name="health_conditions"]:checked'
+              )
+            ).map((checkbox) => checkbox.value),
+            include_health: document.getElementById("include_health").checked,
+          };
+
+          // Save health information to localStorage
+          localStorage.setItem("healthInfo", JSON.stringify(healthData));
+
+          // Show a message based on the inclusion checkbox
+          const message = healthData.include_health
+            ? "Health information saved! It will be taken into account for your meal and dietary planning."
+            : "Health information saved! It will not be used in your meal and dietary planning.";
+
+          const color = healthData.include_health ? "green" : "red";
+
+          // Update the result div with the message and color
+          document.getElementById(
+            "health-info-result"
+          ).innerHTML = `<p style="color:${color};">${message}</p>`;
+        });
+
+      // Image Upload Preview Function
       document
         .getElementById("food-image")
         .addEventListener("change", function (event) {
@@ -567,14 +1083,15 @@
             reader.readAsDataURL(file); // Convert the image file to a data URL
           }
         });
-      // Function to handle image upload and API call
+
+      // Function to handle form submissions and display results
       document
         .getElementById("image-upload-form")
         .addEventListener("submit", async (event) => {
           event.preventDefault();
 
-           // Show loading indicator
-           toggleLoading(true);
+          // Show loading indicator
+          toggleLoading(true);
 
           const fileInput = document.getElementById("food-image");
           const file = fileInput.files[0];
@@ -616,47 +1133,16 @@
           reader.readAsDataURL(file); // Convert image to Base64
         });
 
-      // Save health information to local storage
-      document
-        .getElementById("health-info-form")
-        .addEventListener("submit", (event) => {
-          event.preventDefault();
-
-          // Gather health data
-          const healthData = {
-            age: document.getElementById("age").value,
-            gender: document.getElementById("gender").value,
-            weight: document.getElementById("weight").value,
-            height: document.getElementById("height").value,
-            health_conditions: Array.from(
-              document.querySelectorAll(
-                'input[name="health_conditions"]:checked'
-              )
-            ).map((checkbox) => checkbox.value),
-            include_health: document.getElementById("include_health").checked,
-          };
-
-          // Save health information to localStorage
-          localStorage.setItem("healthInfo", JSON.stringify(healthData));
-
-          // Show a message based on the inclusion checkbox
-          const message = healthData.include_health
-            ? "Health information saved! It will be taken into account for your meal and dietary planning."
-            : "Health information saved! It will not be used in your meal and dietary planning.";
-
-          const color = healthData.include_health ? "green" : "red";
-
-          // Update the result div with the message and color
-          document.getElementById(
-            "health-info-result"
-          ).innerHTML = `<p style="color:${color};">${message}</p>`;
-        });
-
       // Function to get health information from localStorage
       function getHealthInfo() {
         const healthInfo = JSON.parse(localStorage.getItem("healthInfo")) || {};
         return healthInfo.include_health ? healthInfo : null;
       }
+
+      // Clear local storage on page refresh
+      window.onload = function () {
+        localStorage.clear();
+      };
 
       // Attach form submission handlers
       handleFormSubmission(
@@ -671,7 +1157,6 @@
         "nutrition-analysis-result",
         ["meal"]
       );
-      // Updated form submission for the dietary advice form
       handleFormSubmission(
         "dietary-advice-form",
         "/api/dietary_advice",
@@ -695,7 +1180,6 @@
           "plan_goal",
           "activity_level_plan",
           "plan_cuisine",
-          "meal_types_plan",
           "allergies_plan",
         ]
       );
