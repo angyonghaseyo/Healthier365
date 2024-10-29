@@ -81,7 +81,10 @@
       <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <!-- Tabs -->
         <div class="border-b border-gray-200 mb-8">
-          <nav class="flex space-x-8" aria-label="Tabs">
+          <nav
+            class="flex flex-wrap justify-between space-x-8 sm:space-x-0 overflow-x-auto whitespace-nowrap"
+            aria-label="Tabs"
+          >
             <button
               class="custom-tab active px-3 py-2 text-sm font-medium"
               data-tab="health-info"
@@ -244,21 +247,22 @@
                       >
                     </label>
                   </div>
-                    <label
+                  <label
                     for="include_health"
                     class="block text-sm font-medium text-gray-700 mt-4"
                     >Include this information in planning:</label
-                    >
-                    <div class="flex items-center mt-3">
-                      <input
-                        type="checkbox"
-                        id="include_health"
-                        class="rounded border-gray-300 text-blue-600"
-                      />
-                      <p class="text-xs text-gray-500 ml-2">
-                        Note: This information will only be used for meal suggestion, dietary advice, and meal plan.
-                      </p>
-                    </div>
+                  >
+                  <div class="flex items-center mt-3">
+                    <input
+                      type="checkbox"
+                      id="include_health"
+                      class="rounded border-gray-300 text-blue-600"
+                    />
+                    <p class="text-xs text-gray-500 ml-2">
+                      Note: This information will only be used for meal
+                      suggestion, dietary advice, and meal plan.
+                    </p>
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -266,7 +270,7 @@
                 >
                   Save Health Information
                 </button>
-                
+
                 <div id="health-info-result" class="mt-6"></div>
               </form>
             </div>
@@ -957,102 +961,115 @@
       });
 
       // Function to handle API requests and update the result
-      async function handleFormSubmission(formId, apiEndpoint, resultDivId, inputData) {
-  const form = document.getElementById(formId);
-  const resultDiv = document.getElementById(resultDivId);
+      async function handleFormSubmission(
+        formId,
+        apiEndpoint,
+        resultDivId,
+        inputData
+      ) {
+        const form = document.getElementById(formId);
+        const resultDiv = document.getElementById(resultDivId);
 
-  // Helper function to format meal suggestions
-  function formatMealSuggestion(suggestion) {
-    const sections = suggestion.split('\n').filter(section => section.trim());
-    return sections
-      .map(section => {
-        if (section.includes(':')) {
-          const [title, content] = section.split(':');
-          return `
+        // Helper function to format meal suggestions
+        function formatMealSuggestion(suggestion) {
+          const sections = suggestion
+            .split("\n")
+            .filter((section) => section.trim());
+          return sections
+            .map((section) => {
+              if (section.includes(":")) {
+                const [title, content] = section.split(":");
+                return `
             <div class="mb-4">
               <h3 class="text-lg font-semibold mb-2">${title}:</h3>
               <p class="ml-4">${content}</p>
             </div>`;
+              }
+              return `<p class="mb-2">${section}</p>`;
+            })
+            .join("");
         }
-        return `<p class="mb-2">${section}</p>`;
-      })
-      .join('');
-  }
 
-  // Helper function to format dietary advice
-  function formatDietaryAdvice(advice) {
-  // Split into sections and filter empty lines
-  const sections = advice.split('\n').filter(line => line.trim());
-  
-  // Helper function to create a section
-  const createSection = (title, items) => `
+        // Helper function to format dietary advice
+        function formatDietaryAdvice(advice) {
+          // Split into sections and filter empty lines
+          const sections = advice.split("\n").filter((line) => line.trim());
+
+          // Helper function to create a section
+          const createSection = (title, items) => `
     <div class="mb-6">
       <h3 class="text-lg font-semibold mb-3">${title}</h3>
       <div class="space-y-2 ml-4">
-        ${items.map(item => `
+        ${items
+          .map(
+            (item) => `
           <div class="flex items-start gap-2">
             <span class="text-blue-600 mt-1">•</span>
-            <p class="flex-1">${item.replace(/^[-•]?\s*/, '')}</p>
+            <p class="flex-1">${item.replace(/^[-•]?\s*/, "")}</p>
           </div>
-        `).join('')}
+        `
+          )
+          .join("")}
       </div>
     </div>
   `;
 
-  // Process the content
-  let currentSection = '';
-  let currentItems = [];
-  const formattedSections = [];
+          // Process the content
+          let currentSection = "";
+          let currentItems = [];
+          const formattedSections = [];
 
-  sections.forEach(line => {
-    const trimmedLine = line.trim();
-    
-    // Check if this is a section header
-    if (trimmedLine.endsWith(':')) {
-      // If we have a previous section, add it to formatted sections
-      if (currentSection && currentItems.length) {
-        formattedSections.push(createSection(currentSection, currentItems));
-      }
-      // Start new section
-      currentSection = trimmedLine.slice(0, -1); // Remove the colon
-      currentItems = [];
-    } else if (trimmedLine.match(/^\d+\./)) {
-      // Skip numbered points
-      return;
-    } else if (trimmedLine) {
-      currentItems.push(trimmedLine);
-    }
-  });
+          sections.forEach((line) => {
+            const trimmedLine = line.trim();
 
-  // Add the last section
-  if (currentSection && currentItems.length) {
-    formattedSections.push(createSection(currentSection, currentItems));
-  }
+            // Check if this is a section header
+            if (trimmedLine.endsWith(":")) {
+              // If we have a previous section, add it to formatted sections
+              if (currentSection && currentItems.length) {
+                formattedSections.push(
+                  createSection(currentSection, currentItems)
+                );
+              }
+              // Start new section
+              currentSection = trimmedLine.slice(0, -1); // Remove the colon
+              currentItems = [];
+            } else if (trimmedLine.match(/^\d+\./)) {
+              // Skip numbered points
+              return;
+            } else if (trimmedLine) {
+              currentItems.push(trimmedLine);
+            }
+          });
 
-  return `
+          // Add the last section
+          if (currentSection && currentItems.length) {
+            formattedSections.push(createSection(currentSection, currentItems));
+          }
+
+          return `
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="prose max-w-none">
         <p class="mb-6 text-gray-700">
           ${sections[0]} <!-- Introduction paragraph -->
         </p>
-        ${formattedSections.join('')}
+        ${formattedSections.join("")}
         <p class="mt-6 text-sm text-gray-600 italic">
           Remember to consult with a nutritionist or dietitian for personalized advice based on your individual needs and goals.
         </p>
       </div>
     </div>
   `;
-}
+        }
 
-  // Helper function to format meal plan
-  function formatMealPlan(plan) {
-    const meals = plan.split('\n\n').filter(meal => meal.trim());
-    return meals
-      .map(meal => {
-        const lines = meal.split('\n');
-        const [timeLocation, ...details] = lines;
-        
-        return `
+        // Helper function to format meal plan
+        function formatMealPlan(plan) {
+          const meals = plan.split("\n\n").filter((meal) => meal.trim());
+          return meals
+            .map((meal) => {
+              const lines = meal.split("\n");
+              const [timeLocation, ...details] = lines;
+
+              return `
           <div class="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
             <div class="flex items-center gap-2 mb-3">
               <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1061,130 +1078,137 @@
               <h3 class="font-semibold text-lg">${timeLocation}</h3>
             </div>
             <div class="ml-7 space-y-2">
-              ${details.map(detail => `<p>${detail}</p>`).join('')}
+              ${details.map((detail) => `<p>${detail}</p>`).join("")}
             </div>
           </div>`;
-      })
-      .join('');
-  }
+            })
+            .join("");
+        }
 
-  // Helper function to format the nutritional analysis
-function formatNutritionalAnalysis(analysis) {
-  // Helper function to clean text (remove excess asterisks and spaces)
-  const cleanText = (text) => {
-    return text
-      .replace(/\*+/g, '')  // Remove asterisks
-      .replace(/\s+/g, ' ')  // Normalize spaces
-      .trim();
-  };
+        // Helper function to format the nutritional analysis
+        function formatNutritionalAnalysis(analysis) {
+          // Helper function to clean text (remove excess asterisks and spaces)
+          const cleanText = (text) => {
+            return text
+              .replace(/\*+/g, "") // Remove asterisks
+              .replace(/\s+/g, " ") // Normalize spaces
+              .trim();
+          };
 
-  // Helper function to process a section's content
-  const processSectionContent = (content) => {
-    const lines = content.split('\n')
-      .map(line => line.trim())
-      .filter(line => line && line !== '""');
+          // Helper function to process a section's content
+          const processSectionContent = (content) => {
+            const lines = content
+              .split("\n")
+              .map((line) => line.trim())
+              .filter((line) => line && line !== '""');
 
-    return lines.map(line => {
-      // Check if line starts with a label (e.g., "Proteins:", "Vitamins:")
-      const labelMatch = line.match(/^([^:]+):\s*(.+)$/);
-      if (labelMatch) {
-        return `
+            return lines
+              .map((line) => {
+                // Check if line starts with a label (e.g., "Proteins:", "Vitamins:")
+                const labelMatch = line.match(/^([^:]+):\s*(.+)$/);
+                if (labelMatch) {
+                  return `
           <div class="flex flex-col gap-2">
             <div class="font-medium">${cleanText(labelMatch[1])}</div>
             <p class="text-gray-700 ml-4">${cleanText(labelMatch[2])}</p>
           </div>
         `;
-      } else {
-        // If it's a regular line, just display as a paragraph
-        return `<p class="text-gray-700 ml-4">${cleanText(line)}</p>`;
-      }
-    }).join('\n');
-  };
+                } else {
+                  // If it's a regular line, just display as a paragraph
+                  return `<p class="text-gray-700 ml-4">${cleanText(line)}</p>`;
+                }
+              })
+              .join("\n");
+          };
 
-  // Split the analysis into sections
-  const sections = analysis.split(/(?=\n[A-Z][a-zA-Z\s]+\n)/g)
-    .map(section => section.trim())
-    .filter(section => section);
+          // Split the analysis into sections
+          const sections = analysis
+            .split(/(?=\n[A-Z][a-zA-Z\s]+\n)/g)
+            .map((section) => section.trim())
+            .filter((section) => section);
 
-  // Process each section
-  const processedSections = sections.map((section, index) => {
-    // Find the section title (first line) and content (rest of the lines)
-    const [title, ...content] = section.split('\n');
-    
-    // Skip processing if no title
-    if (!title) return '';
+          // Process each section
+          const processedSections = sections.map((section, index) => {
+            // Find the section title (first line) and content (rest of the lines)
+            const [title, ...content] = section.split("\n");
 
-    const cleanTitle = cleanText(title);
-    
-    // Special handling for the main "Nutritional Analysis" header
-    if (cleanTitle.toLowerCase() === 'nutritional analysis') {
-      return ''; // Skip this title as it's handled in the parent container
-    }
-    
-    // Special handling for the introduction
-    if (cleanTitle.toLowerCase().includes('here is') || !content.length) {
-      return `<p class="text-gray-700 mb-6">${cleanTitle}</p>`;
-    }
+            // Skip processing if no title
+            if (!title) return "";
 
-    return `
+            const cleanTitle = cleanText(title);
+
+            // Special handling for the main "Nutritional Analysis" header
+            if (cleanTitle.toLowerCase() === "nutritional analysis") {
+              return ""; // Skip this title as it's handled in the parent container
+            }
+
+            // Special handling for the introduction
+            if (
+              cleanTitle.toLowerCase().includes("here is") ||
+              !content.length
+            ) {
+              return `<p class="text-gray-700 mb-6">${cleanTitle}</p>`;
+            }
+
+            return `
       <div class="mb-6">
         <h3 class="text-lg font-semibold mb-3 text-gray-900">${cleanTitle}</h3>
         <div class="space-y-3 ml-4">
-          ${processSectionContent(content.join('\n'))}
+          ${processSectionContent(content.join("\n"))}
         </div>
       </div>
     `;
-  });
+          });
 
-  // Combine everything into the final layout
-  return processedSections.join('\n');
-}
-// Helper function to format the response based on the endpoint
-  function formatResponse(result, endpoint) {
-    const endpointFormatters = {
-      '/api/meal_suggestion': () => `
+          // Combine everything into the final layout
+          return processedSections.join("\n");
+        }
+        // Helper function to format the response based on the endpoint
+        function formatResponse(result, endpoint) {
+          const endpointFormatters = {
+            "/api/meal_suggestion": () => `
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold mb-4">Meal Suggestion</h2>
           ${formatMealSuggestion(result.meal_suggestion)}
         </div>`,
-      
-      '/api/dietary_advice': () => `
+
+            "/api/dietary_advice": () => `
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold mb-4">Dietary Advice</h2>
           ${formatDietaryAdvice(result.dietary_advice)}
         </div>`,
-      
-      '/api/meal_plan': () => `
+
+            "/api/meal_plan": () => `
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold mb-4">Your Meal Plan</h2>
           ${formatMealPlan(result.meal_plan)}
         </div>`,
-      
-      '/api/nutrition_analysis': () => `
+
+            "/api/nutrition_analysis": () => `
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold mb-4 text-blue-700">Nutritional Analysis</h2>
           <div class="prose max-w-none">
             ${formatNutritionalAnalysis(result.nutrition_analysis)}
           </div>
         </div>`,
-      
-      '/api/image_analysis': () => `
+
+            "/api/image_analysis": () => `
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold mb-4">Food Image Analysis</h2>
           <div class="prose">${result.nutritional_facts}</div>
-        </div>`
-    };
+        </div>`,
+          };
 
-    return endpointFormatters[endpoint]?.() || JSON.stringify(result);
-  }
+          return endpointFormatters[endpoint]?.() || JSON.stringify(result);
+        }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
 
-    try {
-      // Show loading indicator
-      toggleLoading(true);
-      resultDiv.innerHTML = `
+          try {
+            // Show loading indicator
+            toggleLoading(true);
+            resultDiv.innerHTML = `
         <div class="animate-pulse bg-white rounded-lg shadow-md p-6">
           <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
           <div class="space-y-3">
@@ -1194,59 +1218,64 @@ function formatNutritionalAnalysis(analysis) {
           </div>
         </div>`;
 
-      // Collect form data
-      const data = {};
-      inputData.forEach((idOrName) => {
-        const inputField = document.getElementById(idOrName);
+            // Collect form data
+            const data = {};
+            inputData.forEach((idOrName) => {
+              const inputField = document.getElementById(idOrName);
 
-        if (!inputField) {
-          const checkboxes = document.querySelectorAll(
-            `input[name="${idOrName}"]:checked`
-          );
-          if (checkboxes.length > 0) {
-            data[idOrName] = Array.from(checkboxes).map(
-              (checkbox) => checkbox.value
-            );
-          } else {
-            console.warn(`Element with ID or name '${idOrName}' not found.`);
-          }
-        } else if (inputField.type === "checkbox") {
-          data[idOrName] = inputField.checked ? inputField.value : "";
-        } else if (inputField.tagName === "SELECT" && inputField.multiple) {
-          data[idOrName] = Array.from(inputField.selectedOptions).map(
-            (option) => option.value
-          );
-        } else {
-          data[idOrName] = inputField.value;
-        }
-      });
+              if (!inputField) {
+                const checkboxes = document.querySelectorAll(
+                  `input[name="${idOrName}"]:checked`
+                );
+                if (checkboxes.length > 0) {
+                  data[idOrName] = Array.from(checkboxes).map(
+                    (checkbox) => checkbox.value
+                  );
+                } else {
+                  console.warn(
+                    `Element with ID or name '${idOrName}' not found.`
+                  );
+                }
+              } else if (inputField.type === "checkbox") {
+                data[idOrName] = inputField.checked ? inputField.value : "";
+              } else if (
+                inputField.tagName === "SELECT" &&
+                inputField.multiple
+              ) {
+                data[idOrName] = Array.from(inputField.selectedOptions).map(
+                  (option) => option.value
+                );
+              } else {
+                data[idOrName] = inputField.value;
+              }
+            });
 
-      // Get health information if needed
-      const healthInfo = getHealthInfo();
-      if (healthInfo) {
-        data.health_info = healthInfo;
-      }
+            // Get health information if needed
+            const healthInfo = getHealthInfo();
+            if (healthInfo) {
+              data.health_info = healthInfo;
+            }
 
-      // Make API request
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+            // Make API request
+            const response = await fetch(apiEndpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-      const result = await response.json();
-      
-      // Hide loading indicator and show formatted result
-      toggleLoading(false);
-      
-      if (result.error) {
-        resultDiv.innerHTML = `
+            const result = await response.json();
+
+            // Hide loading indicator and show formatted result
+            toggleLoading(false);
+
+            if (result.error) {
+              resultDiv.innerHTML = `
           <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -1261,13 +1290,13 @@ function formatNutritionalAnalysis(analysis) {
               </div>
             </div>
           </div>`;
-      } else {
-        resultDiv.innerHTML = formatResponse(result, apiEndpoint);
-      }
-    } catch (error) {
-      // Hide loading indicator and show error
-      toggleLoading(false);
-      resultDiv.innerHTML = `
+            } else {
+              resultDiv.innerHTML = formatResponse(result, apiEndpoint);
+            }
+          } catch (error) {
+            // Hide loading indicator and show error
+            toggleLoading(false);
+            resultDiv.innerHTML = `
         <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
           <div class="flex">
             <div class="flex-shrink-0">
@@ -1282,9 +1311,9 @@ function formatNutritionalAnalysis(analysis) {
             </div>
           </div>
         </div>`;
-    }
-  });
-}// Save health information to local storage
+          }
+        });
+      } // Save health information to local storage
       document
         .getElementById("health-info-form")
         .addEventListener("submit", (event) => {
