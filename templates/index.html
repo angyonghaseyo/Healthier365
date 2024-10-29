@@ -957,85 +957,212 @@
       });
 
       // Function to handle API requests and update the result
-      async function handleFormSubmission(
-        formId,
-        apiEndpoint,
-        resultDivId,
-        inputData
-      ) {
-        const form = document.getElementById(formId);
-        const resultDiv = document.getElementById(resultDivId);
+      async function handleFormSubmission(formId, apiEndpoint, resultDivId, inputData) {
+  const form = document.getElementById(formId);
+  const resultDiv = document.getElementById(resultDivId);
 
-        form.addEventListener("submit", async (event) => {
-          event.preventDefault();
+  // Helper function to format meal suggestions
+  function formatMealSuggestion(suggestion) {
+    const sections = suggestion.split('\n').filter(section => section.trim());
+    return sections
+      .map(section => {
+        if (section.includes(':')) {
+          const [title, content] = section.split(':');
+          return `
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2">${title}:</h3>
+              <p class="ml-4">${content}</p>
+            </div>`;
+        }
+        return `<p class="mb-2">${section}</p>`;
+      })
+      .join('');
+  }
 
-          // Show loading indicator
-          toggleLoading(true);
+  // Helper function to format dietary advice
+  function formatDietaryAdvice(advice) {
+    const points = advice.split('\n').filter(point => point.trim());
+    return `
+      <div class="space-y-4">
+        ${points.map((point, index) => `
+          <div class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center">
+              ${index + 1}
+            </span>
+            <p class="flex-1">${point}</p>
+          </div>
+        `).join('')}
+      </div>`;
+  }
 
-          const data = {};
-          inputData.forEach((idOrName) => {
-            const inputField = document.getElementById(idOrName);
+  // Helper function to format meal plan
+  function formatMealPlan(plan) {
+    const meals = plan.split('\n\n').filter(meal => meal.trim());
+    return meals
+      .map(meal => {
+        const lines = meal.split('\n');
+        const [timeLocation, ...details] = lines;
+        
+        return `
+          <div class="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
+            <div class="flex items-center gap-2 mb-3">
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 class="font-semibold text-lg">${timeLocation}</h3>
+            </div>
+            <div class="ml-7 space-y-2">
+              ${details.map(detail => `<p>${detail}</p>`).join('')}
+            </div>
+          </div>`;
+      })
+      .join('');
+  }
 
-            if (!inputField) {
-              const checkboxes = document.querySelectorAll(
-                `input[name="${idOrName}"]:checked`
-              );
-              if (checkboxes.length > 0) {
-                data[idOrName] = Array.from(checkboxes).map(
-                  (checkbox) => checkbox.value
-                );
-              } else {
-                console.warn(
-                  `Element with ID or name '${idOrName}' not found.`
-                );
-              }
-            } else if (inputField.type === "checkbox") {
-              data[idOrName] = inputField.checked ? inputField.value : "";
-            } else if (inputField.tagName === "SELECT" && inputField.multiple) {
-              data[idOrName] = Array.from(inputField.selectedOptions).map(
-                (option) => option.value
-              );
-            } else {
-              data[idOrName] = inputField.value;
-            }
-          });
+  // Helper function to format the response based on the endpoint
+  function formatResponse(result, endpoint) {
+    const endpointFormatters = {
+      '/api/meal_suggestion': () => `
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold mb-4">Meal Suggestion</h2>
+          ${formatMealSuggestion(result.meal_suggestion)}
+        </div>`,
+      
+      '/api/dietary_advice': () => `
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold mb-4">Dietary Advice</h2>
+          ${formatDietaryAdvice(result.dietary_advice)}
+        </div>`,
+      
+      '/api/meal_plan': () => `
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold mb-4">Your Meal Plan</h2>
+          ${formatMealPlan(result.meal_plan)}
+        </div>`,
+      
+      '/api/nutrition_analysis': () => `
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold mb-4">Nutritional Analysis</h2>
+          <div class="prose">${result.nutrition_analysis}</div>
+        </div>`,
+      
+      '/api/image_analysis': () => `
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold mb-4">Food Image Analysis</h2>
+          <div class="prose">${result.nutritional_facts}</div>
+        </div>`
+    };
 
-          // Get health information if needed
-          const healthInfo = getHealthInfo();
-          console.log(healthInfo);
-          if (healthInfo) {
-            data.health_info = healthInfo;
+    return endpointFormatters[endpoint]?.() || JSON.stringify(result);
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    try {
+      // Show loading indicator
+      toggleLoading(true);
+      resultDiv.innerHTML = `
+        <div class="animate-pulse bg-white rounded-lg shadow-md p-6">
+          <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div class="space-y-3">
+            <div class="h-4 bg-gray-200 rounded w-full"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+            <div class="h-4 bg-gray-200 rounded w-4/6"></div>
+          </div>
+        </div>`;
+
+      // Collect form data
+      const data = {};
+      inputData.forEach((idOrName) => {
+        const inputField = document.getElementById(idOrName);
+
+        if (!inputField) {
+          const checkboxes = document.querySelectorAll(
+            `input[name="${idOrName}"]:checked`
+          );
+          if (checkboxes.length > 0) {
+            data[idOrName] = Array.from(checkboxes).map(
+              (checkbox) => checkbox.value
+            );
+          } else {
+            console.warn(`Element with ID or name '${idOrName}' not found.`);
           }
+        } else if (inputField.type === "checkbox") {
+          data[idOrName] = inputField.checked ? inputField.value : "";
+        } else if (inputField.tagName === "SELECT" && inputField.multiple) {
+          data[idOrName] = Array.from(inputField.selectedOptions).map(
+            (option) => option.value
+          );
+        } else {
+          data[idOrName] = inputField.value;
+        }
+      });
 
-          console.log(data);
-
-          try {
-            const response = await fetch(apiEndpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            });
-            const result = await response.json();
-            // Hide loading indicator
-            toggleLoading(false);
-            if (result.error) {
-              resultDiv.innerHTML = `<p style="color:red;">Error: ${result.error}</p>`;
-            } else {
-              resultDiv.innerHTML = `<p><strong>Result:</strong> ${JSON.stringify(
-                result
-              )}</p>`;
-            }
-          } catch (error) {
-            // Hide loading indicator
-            toggleLoading(false);
-            resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-          }
-        });
+      // Get health information if needed
+      const healthInfo = getHealthInfo();
+      if (healthInfo) {
+        data.health_info = healthInfo;
       }
 
-      // Save health information to local storage
+      // Make API request
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Hide loading indicator and show formatted result
+      toggleLoading(false);
+      
+      if (result.error) {
+        resultDiv.innerHTML = `
+          <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">
+                  ${result.error}
+                </p>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        resultDiv.innerHTML = formatResponse(result, apiEndpoint);
+      }
+    } catch (error) {
+      // Hide loading indicator and show error
+      toggleLoading(false);
+      resultDiv.innerHTML = `
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">
+                ${error.message}
+              </p>
+            </div>
+          </div>
+        </div>`;
+    }
+  });
+}// Save health information to local storage
       document
         .getElementById("health-info-form")
         .addEventListener("submit", (event) => {
