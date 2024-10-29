@@ -1075,112 +1075,138 @@
           .join("");
       }
 
-      // Helper function to format the nutritional analysis
-      function formatNutritionalAnalysis(analysis) {
-        // Helper function to clean text (remove excess asterisks and spaces)
+      // Helper function to format nutrition analysis
+      function formatNutritionalAnalysis(nutritionData) {
+        console.log(nutritionData);
+
+        // Parse the nutrition data from the JSON string
+        const {
+          macronutrients,
+          micronutrients,
+          caloric_information,
+          health_benefits,
+        } = JSON.parse(nutritionData);
+
+        // Format Macronutrients section
+        const macronutrientsHTML = `
+    <h3 class="text-lg font-semibold mt-4 text-blue-600">Macronutrients</h3>
+    <div class="ml-6 space-y-4 border-l-4 border-blue-200 pl-4 mt-2">
+      <div class="mb-4">
+        <h4 class="font-medium text-gray-700">Proteins</h4>
+        <p><strong>Content:</strong> ${macronutrients.proteins.content}</p>
+        <p><strong>Benefits:</strong> ${macronutrients.proteins.benefits}</p>
+      </div>
+      <div class="mb-4">
+        <h4 class="font-medium text-gray-700">Carbohydrates</h4>
+        <p><strong>Content:</strong> ${macronutrients.carbohydrates.content}</p>
+        <p><strong>Benefits:</strong> ${macronutrients.carbohydrates.benefits}</p>
+      </div>
+      <div class="mb-4">
+        <h4 class="font-medium text-gray-700">Fats</h4>
+        <p><strong>Content:</strong> ${macronutrients.fats.content}</p>
+        <p><strong>Types:</strong> ${macronutrients.fats.types}</p>
+      </div>
+    </div>
+  `;
+
+        // Format Micronutrients section
+        const vitaminsHTML = micronutrients.vitamins
+          .map(
+            (vitamin) => `
+      <div class="ml-6 mb-2">
+        <h4 class="font-medium text-gray-700">${vitamin.name}</h4>
+        <p>${vitamin.benefits}</p>
+      </div>
+    `
+          )
+          .join("");
+
+        const mineralsHTML = micronutrients.minerals
+          .map(
+            (mineral) => `
+      <div class="ml-6 mb-2">
+        <h4 class="font-medium text-gray-700">${mineral.name}</h4>
+        <p>${mineral.benefits}</p>
+      </div>
+    `
+          )
+          .join("");
+
+        const micronutrientsHTML = `
+    <h3 class="text-lg font-semibold mt-4 text-green-600">Micronutrients</h3>
+    <div class="space-y-4 border-l-4 border-green-200 pl-4 mt-2">
+      <h4 class="font-semibold text-gray-800">Vitamins</h4>
+      <div>${vitaminsHTML}</div>
+      <h4 class="font-semibold text-gray-800 mt-4">Minerals</h4>
+      <div>${mineralsHTML}</div>
+    </div>
+  `;
+
+        // Format Caloric Information section
+        const caloricInfoHTML = `
+    <h3 class="text-lg font-semibold mt-4 text-orange-600">Caloric Information</h3>
+    <div class="ml-6 border-l-4 border-orange-200 pl-4 mt-2">
+      <p><strong>Calories per serving:</strong> ${caloric_information.calories_per_serving}</p>
+      <p><strong>Portion size:</strong> ${caloric_information.portion_size}</p>
+    </div>
+  `;
+
+        // Format Health Benefits section
+        const healthBenefitsHTML = `
+    <h3 class="text-lg font-semibold mt-4 text-purple-600">Health Benefits</h3>
+    <div class="ml-6 border-l-4 border-purple-200 pl-4 mt-2 space-y-2">
+      <p><strong>Advantages:</strong> ${health_benefits.nutritional_advantages}</p>
+      <p><strong>Considerations:</strong> ${health_benefits.dietary_considerations}</p>
+      <p><strong>Recommendations:</strong> ${health_benefits.recommendations}</p>
+    </div>
+  `;
+
+        // Combine all sections into final HTML structure
+        return `
+    <div class="bg-white rounded-lg shadow-md p-6 space-y-6">
+      ${macronutrientsHTML}
+      ${micronutrientsHTML}
+      ${caloricInfoHTML}
+      ${healthBenefitsHTML}
+    </div>
+  `;
+      }
+
+      function formatImageAnalysis(analysisJson) {
+        // Helper function to clean text (remove asterisks, hashtags, and normalize spaces)
+        console.log(analysisJson);
         const cleanText = (text) => {
           return text
-            .replace(/\*+/g, "") // Remove asterisks
+            .replace(/[*#]+/g, "") // Remove asterisks and hashtags
             .replace(/\s+/g, " ") // Normalize spaces
             .trim();
         };
 
-        // Helper function to process a section's content
-        const processSectionContent = (content) => {
-          const lines = content
-            .split("\n")
-            .map((line) => line.trim())
-            .filter((line) => line && line !== '""');
+        // Check if input is a JSON string and parse it
+        let analysisData;
+        try {
+          analysisData =
+            typeof analysisJson === "string"
+              ? JSON.parse(analysisJson)
+              : analysisJson;
+        } catch (e) {
+          console.error("Invalid JSON input", e);
+          return `<p class="text-red-500">Invalid analysis data format.</p>`;
+        }
 
-          return lines
-            .map((line) => {
-              // Check if line starts with a label (e.g., "Proteins:", "Vitamins:")
-              const labelMatch = line.match(/^([^:]+):\s*(.+)$/);
-              if (labelMatch) {
-                return `
-          <div class="flex flex-col gap-2">
-            <div class="font-medium">${cleanText(labelMatch[1])}</div>
-            <p class="text-gray-700 ml-4">${cleanText(labelMatch[2])}</p>
-          </div>
-        `;
-              } else {
-                // If it's a regular line, just display as a paragraph
-                return `<p class="text-gray-700 ml-4">${cleanText(line)}</p>`;
-              }
-            })
-            .join("\n");
-        };
-
-        // Split the analysis into sections
-        const sections = analysis
-          .split(/(?=\n[A-Z][a-zA-Z\s]+\n)/g)
-          .map((section) => section.trim())
-          .filter((section) => section);
-
-        // Process each section
-        const processedSections = sections.map((section, index) => {
-          // Find the section title (first line) and content (rest of the lines)
-          const [title, ...content] = section.split("\n");
-
-          // Skip processing if no title
-          if (!title) return "";
-
-          const cleanTitle = cleanText(title);
-
-          // Special handling for the main "Nutritional Analysis" header
-          if (cleanTitle.toLowerCase() === "nutritional analysis") {
-            return ""; // Skip this title as it's handled in the parent container
-          }
-
-          // Special handling for the introduction
-          if (cleanTitle.toLowerCase().includes("here is") || !content.length) {
-            return `<p class="text-gray-700 mb-6">${cleanTitle}</p>`;
-          }
-
-          return `
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-3 text-gray-900">${cleanTitle}</h3>
-        <div class="space-y-3 ml-4">
-          ${processSectionContent(content.join("\n"))}
-        </div>
-      </div>
-    `;
-        });
-
-        // Combine everything into the final layout
-        return processedSections.join("\n");
-      }
-
-      function formatImageAnalysis(analysisJson) {
-  // Helper function to clean text (remove asterisks, hashtags, and normalize spaces)
-  console.log(analysisJson);
-  const cleanText = (text) => {
-    return text
-      .replace(/[*#]+/g, "") // Remove asterisks and hashtags
-      .replace(/\s+/g, " ") // Normalize spaces
-      .trim();
-  };
-
-  // Check if input is a JSON string and parse it
-  let analysisData;
-  try {
-    analysisData = typeof analysisJson === "string" ? JSON.parse(analysisJson) : analysisJson;
-  } catch (e) {
-    console.error("Invalid JSON input", e);
-    return `<p class="text-red-500">Invalid analysis data format.</p>`;
-  }
-
-  // Initialize HTML content
-  let formattedContent = `
+        // Initialize HTML content
+        let formattedContent = `
     <div class="bg-white rounded-lg shadow-md p-6 sm:p-8">
       <h2 class="text-xl font-semibold mb-4 sm:mb-6 text-blue-700">Food Image Analysis</h2>
-      <p class="text-gray-700 mb-6">${cleanText(analysisData.introduction || "")}</p> <!-- Intro paragraph -->
+      <p class="text-gray-700 mb-6">${cleanText(
+        analysisData.introduction || ""
+      )}</p> <!-- Intro paragraph -->
   `;
 
-  // Loop through each item in the analysis data if available
-  (analysisData.items || []).forEach((item) => {
-    const itemName = cleanText(item.name || "Food Item");
-    formattedContent += `
+        // Loop through each item in the analysis data if available
+        (analysisData.items || []).forEach((item) => {
+          const itemName = cleanText(item.name || "Food Item");
+          formattedContent += `
       <h4 class="text-md font-semibold mt-4 mb-2"><strong>${itemName}</strong></h4>
       <table class="table-fixed w-full text-left border-collapse mb-4">
         <thead>
@@ -1192,24 +1218,24 @@
         <tbody>
     `;
 
-    // Display nutrients in a table
-    (item.nutrients || []).forEach((nutrient) => {
-      const label = cleanText(nutrient.name || "");
-      const value = cleanText(nutrient.value || "");
-      formattedContent += `
+          // Display nutrients in a table
+          (item.nutrients || []).forEach((nutrient) => {
+            const label = cleanText(nutrient.name || "");
+            const value = cleanText(nutrient.value || "");
+            formattedContent += `
         <tr>
           <td class="px-2 py-1 border-b">${label}</td>
           <td class="px-2 py-1 border-b">${value}</td>
         </tr>
       `;
-    });
+          });
 
-    formattedContent += `</tbody></table>`;
-  });
+          formattedContent += `</tbody></table>`;
+        });
 
-  // Add summary section if available
-  if (analysisData.summary) {
-    formattedContent += `
+        // Add summary section if available
+        if (analysisData.summary) {
+          formattedContent += `
       <h3 class="text-lg font-semibold mt-6 mb-3 text-blue-700">Summary of Nutritional Content</h3>
       <table class="table-fixed w-full text-left border-collapse">
         <thead>
@@ -1221,31 +1247,30 @@
         <tbody>
     `;
 
-    // Display each summary nutrient in a table row
-    (analysisData.summary || []).forEach((summaryItem) => {
-      const label = cleanText(summaryItem.name || "");
-      const value = cleanText(summaryItem.value || "");
-      formattedContent += `
+          // Display each summary nutrient in a table row
+          (analysisData.summary || []).forEach((summaryItem) => {
+            const label = cleanText(summaryItem.name || "");
+            const value = cleanText(summaryItem.value || "");
+            formattedContent += `
         <tr>
           <td class="px-2 py-1 border-b">${label}</td>
           <td class="px-2 py-1 border-b">${value}</td>
         </tr>
       `;
-    });
+          });
 
-    formattedContent += `</tbody></table>`;
-  }
+          formattedContent += `</tbody></table>`;
+        }
 
-  formattedContent += `
+        formattedContent += `
     <p class="text-gray-500 italic mt-4">* Note: Values are approximate and may vary based on preparation and portion size.</p>
   `;
 
-  formattedContent += '</div>'; // Close main container
-  return formattedContent;
-}
+        formattedContent += "</div>"; // Close main container
+        return formattedContent;
+      }
 
-
-     // <p class="text-gray-500 italic mt-4">* Note: Values are approximate and may vary based on preparation and portion size.</p>
+      // <p class="text-gray-500 italic mt-4">* Note: Values are approximate and may vary based on preparation and portion size.</p>
 
       // Helper function to format the response based on the endpoint
       function formatResponse(result, endpoint) {

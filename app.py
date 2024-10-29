@@ -147,7 +147,56 @@ def analyze_nutrition(meal):
    - Dietary considerations
    - Recommendations for balanced consumption
 
-Please provide detailed information for each section."""
+Return in JSON format ONLY with the following structure (Do not include anything else AND Do not wrap the json codes in JSON markers):
+
+{{
+  "macronutrients": {{
+    "proteins": {{
+      "content": "Protein content and benefits",
+      "benefits": "Additional benefits of proteins"
+    }},
+    "carbohydrates": {{
+      "content": "Carbohydrate content and benefits",
+      "benefits": "Additional benefits of carbohydrates"
+    }},
+    "fats": {{
+      "content": "Fat content and types present",
+      "types": "Types of fats present"
+    }}
+  }},
+  "micronutrients": {{
+    "vitamins": [
+      {{
+        "name": "Vitamin A",
+        "benefits": "Benefits of Vitamin A"
+      }},
+      {{
+        "name": "Vitamin C",
+        "benefits": "Benefits of Vitamin C"
+      }}
+    ],
+    "minerals": [
+      {{
+        "name": "Iron",
+        "benefits": "Benefits of Iron"
+      }},
+      {{
+        "name": "Calcium",
+        "benefits": "Benefits of Calcium"
+      }}
+    ]
+  }},
+  "caloric_information": {{
+    "calories_per_serving": "Approximate calories per serving",
+    "portion_size": "Portion size reference"
+  }},
+  "health_benefits": {{
+    "nutritional_advantages": "Key nutritional advantages",
+    "dietary_considerations": "Dietary considerations",
+    "recommendations": "Recommendations for balanced consumption"
+  }}
+}}
+"""
 
     return generate_chat_response(prompt, max_tokens=600)
 
