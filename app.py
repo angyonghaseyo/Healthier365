@@ -35,6 +35,11 @@ def analyze_food_image(base64_image):
 Please analyze the food in this image and provide a detailed nutritional breakdown.
 Also, please summarize the total nutritional values for the entire meal, with calories, protein, fat, carbohydrates, dietary fiber, water, notable vitamins, and minerals.
 
+For each food item, include a healthiness rating under the following criteria:
+- "Healthiest": Low in calories, low in saturated fat, low in sugar, high in fiber, rich in essential vitamins and minerals.
+- "Moderate health option": Moderate levels of calories, fat, and sugar; some beneficial nutrients present.
+- "Consume with caution": High in calories, high in saturated fat, high in sugar, or low in essential nutrients.
+
 Return the analysis in this structured format ONLY with the following information for each food item:
 - Name of the food item
 - Serving size (e.g., 100g or 1 cup)
@@ -45,6 +50,7 @@ Return the analysis in this structured format ONLY with the following informatio
 - Key vitamins (e.g., Vitamin C, B6, K, B1, B12, with amounts and % DV)
 - Key minerals (e.g., Iron, Zinc, Magnesium, Potassium, with amounts and % DV)
 - Water content (approximate grams)
+- Healthiness rating (either "Healthiest", "Moderate health option", or "Consume with caution")
 
 Return in JSON format ONLY with the following structure (Do not include anything else AND Do not wrap the json codes in JSON markers):
 {
@@ -52,11 +58,13 @@ Return in JSON format ONLY with the following structure (Do not include anything
   "items": [
     {
       "name": "Chicken (Boiled, Skinless, 100g)",
+      "serving_size": "100g",
       "nutrients": [
         { "name": "Calories", "value": "165 kcal" },
         { "name": "Protein", "value": "31g" }
         // More nutrients
-      ]
+      ],
+      "healthiness_rating": "Healthiest"
     },
     // More items
   ],
@@ -66,9 +74,9 @@ Return in JSON format ONLY with the following structure (Do not include anything
     // More summary nutrients
   ]
 }
-
-
 """
+
+
 
 
     response = openai.ChatCompletion.create(

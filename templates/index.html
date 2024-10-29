@@ -1198,16 +1198,57 @@
         let formattedContent = `
     <div class="bg-white rounded-lg shadow-md p-6 sm:p-8">
       <h2 class="text-xl font-semibold mb-4 sm:mb-6 text-blue-700">Food Image Analysis</h2>
-      <p class="text-gray-700 mb-6">${cleanText(
+       <p class="text-gray-700 mb-6">${cleanText(
         analysisData.introduction || ""
-      )}</p> <!-- Intro paragraph -->
+      )}</p> 
+      <h2 class="text-l font-semibold mb-4 sm:mb-6 text-black-700">HERE'S WHAT WE RECOMMEND:</h2>
+      <div class="flex items-center mb-6">
+        <span class="flex items-center mr-4">
+          <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full mr-2"></span>
+          <span class="text-gray-700">Healthiest</span>
+        </span>
+        <span class="flex items-center mr-4">
+          <span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full mr-2"></span>
+          <span class="text-gray-700">Moderate Health Option</span>
+        </span>
+        <span class="flex items-center">
+          <span class="bg-red-100 text-red-600 px-2 py-1 rounded-full mr-2"></span>
+          <span class="text-gray-700">Consume with Caution</span>
+        </span>
+      </div>
+     <!-- Intro paragraph -->
   `;
 
         // Loop through each item in the analysis data if available
         (analysisData.items || []).forEach((item) => {
           const itemName = cleanText(item.name || "Food Item");
+          const healthiness = item.healthiness_rating || "";
+          let healthinessColorClass = "";
+          let healthinessBgClass = "";
+
+          // Set the color class and background color based on healthiness rating
+          switch (healthiness) {
+            case "Healthiest":
+              healthinessColorClass =
+                "text-green-600 border-green-600 bg-green-100";
+              break;
+            case "Moderate health option":
+              healthinessColorClass =
+                "text-yellow-600 border-yellow-600 bg-yellow-100";
+              break;
+            case "Consume with caution":
+              healthinessColorClass = "text-red-600 border-red-600 bg-red-100";
+              break;
+            default:
+              healthinessColorClass =
+                "text-gray-600 border-gray-600 bg-gray-100";
+          }
+
           formattedContent += `
       <h4 class="text-md font-semibold mt-4 mb-2"><strong>${itemName}</strong></h4>
+      <p class="font-medium mb-2 inline-block px-2 py-1 rounded-full border ${healthinessColorClass}">
+        ${healthiness}
+      </p>
       <table class="table-fixed w-full text-left border-collapse mb-4">
         <thead>
           <tr>
