@@ -89,15 +89,29 @@ def suggest_meal(preferences, dietary_restrictions, goal, meal_type, cuisine, he
 
 def analyze_nutrition(meal):
     """Provide nutritional analysis for a given meal"""
-    prompt = (
-        f"Please analyze the following meal and provide a structured response with these sections:\n"
-        f"1. Macronutrients (proteins, carbs, fats)\n"
-        f"2. Micronutrients (vitamins and minerals)\n"
-        f"3. Caloric content\n"
-        f"4. Health benefits\n\n"
-        f"Meal to analyze: '{meal}'"
-    )
-    return generate_chat_response(prompt, max_tokens=250)
+    prompt = f"""Please provide a comprehensive nutritional analysis of '{meal}' with the following structure:
+
+1. Macronutrients:
+   - Proteins: Content and benefits
+   - Carbohydrates: Content and benefits
+   - Fats: Content and types present
+
+2. Micronutrients:
+   - Vitamins: Key vitamins present
+   - Minerals: Important minerals
+   
+3. Caloric Information:
+   - Approximate calories per serving
+   - Portion size reference
+   
+4. Health Benefits:
+   - Key nutritional advantages
+   - Dietary considerations
+   - Recommendations for balanced consumption
+
+Please provide detailed information for each section."""
+
+    return generate_chat_response(prompt, max_tokens=500)
 
 def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies, health_info):
     """Generate personalized dietary advice"""
