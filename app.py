@@ -31,7 +31,45 @@ def generate_chat_response(prompt, system_message="You are a nutrition and meal 
 
 def analyze_food_image(base64_image):
     """Analyze food image using OpenAI's Vision API"""
-    prompt = "Please provide a detailed nutritional analysis of the food in this image, including Carbohydrates, Proteins, Fats, Vitamins, Minerals, Dietary fibre, and Water."
+    prompt = """
+Please analyze the food in this image and provide a detailed nutritional breakdown.
+Also, please summarize the total nutritional values for the entire meal, with calories, protein, fat, carbohydrates, dietary fiber, water, notable vitamins, and minerals.
+
+Return the analysis in this structured format ONLY with the following information for each food item:
+- Name of the food item
+- Serving size (e.g., 100g or 1 cup)
+- Calories
+- Carbohydrates (total grams and any notable fibers)
+- Protein (grams)
+- Fat (total grams and any saturated fats)
+- Key vitamins (e.g., Vitamin C, B6, K, B1, B12, with amounts and % DV)
+- Key minerals (e.g., Iron, Zinc, Magnesium, Potassium, with amounts and % DV)
+- Water content (approximate grams)
+
+Return in JSON format ONLY with the following structure (Do not include anything else AND Do not wrap the json codes in JSON markers):
+{
+  "introduction": "Introduction text...",
+  "items": [
+    {
+      "name": "Chicken (Boiled, Skinless, 100g)",
+      "nutrients": [
+        { "name": "Calories", "value": "165 kcal" },
+        { "name": "Protein", "value": "31g" }
+        // More nutrients
+      ]
+    },
+    // More items
+  ],
+  "summary": [
+    { "name": "Total Calories", "value": "418 kcal" },
+    { "name": "Total Protein", "value": "37g" }
+    // More summary nutrients
+  ]
+}
+
+
+"""
+
 
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini",
