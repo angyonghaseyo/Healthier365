@@ -981,19 +981,68 @@
 
   // Helper function to format dietary advice
   function formatDietaryAdvice(advice) {
-    const points = advice.split('\n').filter(point => point.trim());
-    return `
-      <div class="space-y-4">
-        ${points.map((point, index) => `
-          <div class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center">
-              ${index + 1}
-            </span>
-            <p class="flex-1">${point}</p>
+  // Split into sections and filter empty lines
+  const sections = advice.split('\n').filter(line => line.trim());
+  
+  // Helper function to create a section
+  const createSection = (title, items) => `
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-3">${title}</h3>
+      <div class="space-y-2 ml-4">
+        ${items.map(item => `
+          <div class="flex items-start gap-2">
+            <span class="text-blue-600 mt-1">•</span>
+            <p class="flex-1">${item.replace(/^[-•]?\s*/, '')}</p>
           </div>
         `).join('')}
-      </div>`;
+      </div>
+    </div>
+  `;
+
+  // Process the content
+  let currentSection = '';
+  let currentItems = [];
+  const formattedSections = [];
+
+  sections.forEach(line => {
+    const trimmedLine = line.trim();
+    
+    // Check if this is a section header
+    if (trimmedLine.endsWith(':')) {
+      // If we have a previous section, add it to formatted sections
+      if (currentSection && currentItems.length) {
+        formattedSections.push(createSection(currentSection, currentItems));
+      }
+      // Start new section
+      currentSection = trimmedLine.slice(0, -1); // Remove the colon
+      currentItems = [];
+    } else if (trimmedLine.match(/^\d+\./)) {
+      // Skip numbered points
+      return;
+    } else if (trimmedLine) {
+      currentItems.push(trimmedLine);
+    }
+  });
+
+  // Add the last section
+  if (currentSection && currentItems.length) {
+    formattedSections.push(createSection(currentSection, currentItems));
   }
+
+  return `
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="prose max-w-none">
+        <p class="mb-6 text-gray-700">
+          ${sections[0]} <!-- Introduction paragraph -->
+        </p>
+        ${formattedSections.join('')}
+        <p class="mt-6 text-sm text-gray-600 italic">
+          Remember to consult with a nutritionist or dietitian for personalized advice based on your individual needs and goals.
+        </p>
+      </div>
+    </div>
+  `;
+}
 
   // Helper function to format meal plan
   function formatMealPlan(plan) {
