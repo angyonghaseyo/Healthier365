@@ -1068,7 +1068,8 @@
       .join('');
   }
 
-  function formatNutritionalAnalysis(analysis) {
+  // Helper function to format the nutritional analysis
+function formatNutritionalAnalysis(analysis) {
   // Helper function to clean text (remove excess asterisks and spaces)
   const cleanText = (text) => {
     return text
@@ -1106,7 +1107,7 @@
     .filter(section => section);
 
   // Process each section
-  const processedSections = sections.map(section => {
+  const processedSections = sections.map((section, index) => {
     // Find the section title (first line) and content (rest of the lines)
     const [title, ...content] = section.split('\n');
     
@@ -1114,6 +1115,12 @@
     if (!title) return '';
 
     const cleanTitle = cleanText(title);
+    
+    // Special handling for the main "Nutritional Analysis" header
+    if (cleanTitle.toLowerCase() === 'nutritional analysis') {
+      return ''; // Skip this title as it's handled in the parent container
+    }
+    
     // Special handling for the introduction
     if (cleanTitle.toLowerCase().includes('here is') || !content.length) {
       return `<p class="text-gray-700 mb-6">${cleanTitle}</p>`;
@@ -1121,7 +1128,7 @@
 
     return `
       <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-3 text-blue-700">${cleanTitle}</h3>
+        <h3 class="text-lg font-semibold mb-3 text-gray-900">${cleanTitle}</h3>
         <div class="space-y-3 ml-4">
           ${processSectionContent(content.join('\n'))}
         </div>
@@ -1130,23 +1137,9 @@
   });
 
   // Combine everything into the final layout
-  return `
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold mb-4 text-blue-800">
-        Nutritional Analysis
-      </h2>
-      
-      ${processedSections.join('\n')}
-
-      <div class="mt-6 pt-4 border-t border-gray-200">
-        <p class="text-sm text-gray-600 italic">
-          Note: Actual nutritional values may vary based on portion size and preparation method.
-        </p>
-      </div>
-    </div>
-  `;
+  return processedSections.join('\n');
 }
-  // Helper function to format the response based on the endpoint
+// Helper function to format the response based on the endpoint
   function formatResponse(result, endpoint) {
     const endpointFormatters = {
       '/api/meal_suggestion': () => `
@@ -1169,8 +1162,10 @@
       
       '/api/nutrition_analysis': () => `
         <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-semibold mb-4">Nutritional Analysis</h2>
-          <div class="prose">${formatNutritionalAnalysis(result.nutrition_analysis)}</div>
+          <h2 class="text-xl font-semibold mb-4 text-blue-700">Nutritional Analysis</h2>
+          <div class="prose max-w-none">
+            ${formatNutritionalAnalysis(result.nutrition_analysis)}
+          </div>
         </div>`,
       
       '/api/image_analysis': () => `

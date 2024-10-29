@@ -111,7 +111,7 @@ def analyze_nutrition(meal):
 
 Please provide detailed information for each section."""
 
-    return generate_chat_response(prompt, max_tokens=500)
+    return generate_chat_response(prompt, max_tokens=600)
 
 def provide_dietary_advice(goal, current_diet, activity_level, preferred_meal_types, allergies, health_info):
     """Generate personalized dietary advice"""
