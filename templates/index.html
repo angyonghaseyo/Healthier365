@@ -1637,29 +1637,6 @@
           "allergies_plan",
         ]
       );
-
-      // Reload Webpage for Live Deployment
-      const url = `https://nutri365.onrender.com/`; // Replace with your Render URL
-      const interval = 840000; // Interval in milliseconds (14 min)
-
-      function reloadWebsite() {
-        fetch(url)
-          .then((response) => {
-            console.log(
-              `Reloaded at ${new Date().toISOString()}: Status Code ${
-                response.status
-              }`
-            );
-          })
-          .catch((error) => {
-            console.error(
-              `Error reloading at ${new Date().toISOString()}:`,
-              error.message
-            );
-          });
-      }
-
-      setInterval(reloadWebsite, interval);
     </script>
   </body>
 </html>

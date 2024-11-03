@@ -3,6 +3,9 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import openai
 import os
+import requests
+from datetime import datetime
+from threading import Timer
 
 # Initialize Flask app and CORS
 app = Flask(__name__)
@@ -14,6 +17,22 @@ load_dotenv()
 # Set OpenAI API key
 api_key = os.getenv('API_KEY')
 openai.api_key = api_key
+
+# Define the URL and interval
+url = "https://healthier365.onrender.com/"  # Replace with your actual Render URL
+interval = 840  # Interval in seconds (14 minutes)
+
+def reload_website():
+    try:
+        response = requests.get(url)
+        print(f"Reloaded at {datetime.now().isoformat()}: Status Code {response.status_code}")
+    except requests.exceptions.RequestException as error:
+        print(f"Error reloading at {datetime.now().isoformat()}: {error}")
+    # Schedule the next call
+    Timer(interval, reload_website).start()
+
+# Start the first call
+reload_website()
 
 # Helper Functions for OpenAI API Interaction
 def generate_chat_response(prompt, system_message="You are a nutrition and meal planning assistant.", max_tokens=100):
