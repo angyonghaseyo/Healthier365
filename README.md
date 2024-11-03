@@ -1,10 +1,10 @@
-# Nutri365 - SG AI Meal Planner (Healthy365 Extension)
+# Healthier365 - SG AI Nutritionist (Healthy365 Extension)
 
-Nutri365 is an intelligent meal planning extension of the Healthy365 app, designed to promote healthier eating habits with the help of advanced AI technology. This AI-powered solution offers personalized meal suggestions, nutritional analysis, dietary advice, and customizable meal plans tailored to individual health goals, preferences, and dietary restrictions. Nutri365 is not just about food, it's about creating a balanced, healthy way of living that supports long-term well-being, perfectly complementing the Healthy365 app ecosystem.
+Healthier365 is an intelligent nutritionist extension of the Healthy365 app, designed to promote healthier eating habits with the help of advanced AI technology. This AI-powered solution offers personalized meal suggestions, nutritional analysis, and advices tailored to individual health goals, preferences, and dietary restrictions. Healthier365 is not just about food, it's about creating a balanced, healthy way of living that supports long-term well-being, perfectly complementing the Healthy365 app ecosystem.
 
 ## Project Overview
 
-Nutri365, a 24/25 Sem 1 SMU IS215 Project by DBTT Group 2, is designed to revolutionize daily nutrition and promote a healthier lifestyle through AI-powered meal planning. This project aims to provide personalized meal suggestions, in-depth nutritional insights, and tailored dietary advice, making healthy eating accessible and convenient for everyone. 
+Healthier365, a 24/25 Sem 1 SMU IS215 Project by DBTT Group 2, is designed to revolutionize daily nutrition and promote a healthier lifestyle through AI-powered meal nutritionist. This project aims to provide personalized meal suggestions, in-depth nutritional insights, and tailored advice, making healthy eating accessible and convenient for everyone. 
 
 ## Table of Contents
 - [Getting Started](#getting-started)
@@ -28,8 +28,8 @@ Before you start, make sure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/bransometan/Nutri365.git
-cd Nutri365
+git clone https://github.com/bransometan/Healthier365.git
+cd Healthier365
 
 # Install dependencies
 pip install -r requirements.txt
@@ -63,7 +63,6 @@ Visit http://localhost:3000 in your browser.
 - AI-Driven Meal Recommendations: Utilize advanced AI algorithms to generate customized meal suggestions based on user preferences, dietary needs, and health objectives.
 - Nutritional Analysis via Search and Image Recognition: Deliver real-time nutritional insights using either search text or uploaded images, supporting users in maintaining a balanced diet and tracking nutrient intake.
 - AI-Guided Dietary Advice: Provide personalized dietary tips aligned with users’ current eating habits and health targets, promoting sustainable lifestyle improvements.
-- Customizable Meal Plans: Develop adaptable meal plans, available weekly or monthly, that cater to individual health goals and preferences.
 
 Additionally, users can input their health data to receive more tailored nutrition and meal suggestions.
 
